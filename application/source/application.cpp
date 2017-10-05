@@ -1,0 +1,147 @@
+#include <unordered_map>
+#include <vector>
+#include <iostream>
+#include "../header/application/application.hpp"
+#include "../header/application/abstract_plugin.hpp"
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/asio.hpp>
+namespace application {
+    class application::impl final {
+    public:
+        impl(int argc, char **argv):io_serv(std::make_shared<boost::asio::io_service>()){
+            boost::program_options::store(boost::program_options::parse_command_line(argc, argv, app_options_), args_);
+            boost::program_options::notify(args_);
+        }
+
+        ~impl() {}
+
+        void add_plugin(abstract_plugin *plugin) {
+            auto size = storage_plugin.size();
+            storage_plugin.emplace_back(plugin);
+            mapper.emplace(plugin->name(), size);
+            state_plugin.emplace_back(size);
+        }
+
+        abstract_plugin *get_plugin(std::size_t index) {
+            return storage_plugin.at(index).get();
+        }
+
+        state_t state(std::size_t index) const {
+            return storage_plugin.at(index)->state();
+        }
+
+        result invoke(const std::string &name_space, const std::string method, virtual_args args) {
+            auto it = space.find(name_space);
+            return methods.at(it->second).invoke(method, args);
+        }
+
+        std::vector<std::size_t> &current_state() {
+            return state_plugin;
+        }
+
+        void add_route(route_t __route__) {
+            const auto &name = __route__.name();
+            auto size = methods.size();
+            methods.emplace_back(__route__);
+            space.emplace(name, size);
+
+        }
+
+        boost::program_options::options_description app_options_;
+        boost::program_options::options_description cfg_options_;
+        boost::program_options::variables_map args_;
+        boost::filesystem::path data_dir;
+
+        boost::asio::io_service* loop(){
+            return io_serv.get();
+        }
+
+    private:
+        std::shared_ptr< boost::asio::io_service >    io_serv;
+        /// plugin
+        std::vector<std::unique_ptr<abstract_plugin>> storage_plugin;
+        std::unordered_map<std::string, std::size_t> mapper;
+        std::vector<std::size_t> state_plugin;
+        /// plugin
+
+        /// rpc
+        std::unordered_map<std::string, std::size_t> space;
+        std::vector<route_t> methods;
+        /// rpc
+    };
+
+    void application::shutdown() {
+
+        for (const auto &i:pimpl->current_state()) {
+            if (pimpl->state(i) == state_t::started) {
+                pimpl->get_plugin(i)->shutdown();
+            }
+        }
+
+        pimpl->loop()->stop();
+
+    }
+
+    void application::startup() {
+
+        for (const auto &i:pimpl->current_state()) {
+            if (pimpl->state(i) == state_t::initialized) {
+                pimpl->get_plugin(i)->startup(pimpl->args_);
+            }
+        }
+
+        std::shared_ptr<boost::asio::signal_set> sigint_set(new boost::asio::signal_set(*pimpl->loop(), SIGINT));
+        sigint_set->async_wait(
+                [sigint_set,this](const boost::system::error_code& err, int num) {
+                    shutdown();
+                    sigint_set->cancel();
+                }
+        );
+
+        std::shared_ptr<boost::asio::signal_set> sigterm_set(new boost::asio::signal_set(*pimpl->loop(), SIGTERM));
+        sigterm_set->async_wait(
+                [sigterm_set,this](const boost::system::error_code& err, int num) {
+                    shutdown();
+                    sigterm_set->cancel();
+                }
+        );
+
+        pimpl->loop()->run();
+
+        shutdown();
+    }
+
+    void application::initialize() {
+
+        for (const auto &i:pimpl->current_state()) {
+            if (pimpl->state(i) == state_t::registered) {
+                pimpl->get_plugin(i)->initialization(context());
+            }
+        }
+
+    }
+
+    application::application(int argc, char **argv) : pimpl(std::make_unique<impl>(argc,argv)) {}
+
+    void application::add_plugin(abstract_plugin *plugin) {
+        pimpl->add_plugin(plugin);
+    }
+
+    application::~application() {
+        std::cerr << "~application" << std::endl;
+    }
+
+    result application::invoke(const std::string &name_space, const std::string method, virtual_args args) {
+        return pimpl->invoke(name_space, method, args);
+    }
+
+    context_t *application::context() {
+        return this;
+    }
+
+    void application::add_route(route_t __route__) {
+        pimpl->add_route(__route__);
+    }
+}
