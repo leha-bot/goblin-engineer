@@ -14,6 +14,16 @@ namespace application {
     class plugin : public abstract_plugin {
     public:
 
+        result call(const std::string &method, virtual_args &&args) override  final{
+            std::cerr << "execute:" << name() << std::endl;
+            if (state() == state_t::started) {
+                return self()->execute(method,std::forward<virtual_args>(args));
+            } else {
+                std::cerr << "error execute plugin: " << name() << std::endl;
+                return result();
+            }
+        }
+
         void startup(const boost::program_options::variables_map &options) override final {
             std::cerr << "startup plugin: " << name() << std::endl;
             if (state() == state_t::initialized) {

@@ -24,14 +24,11 @@ namespace application {
 
         void shutdown();
 
+    private:
         context_t *context();
 
-    protected:
-        result invoke(const std::string &name_space, const std::string method, virtual_args args) override;
+        result call(const std::string &, const std::string &method, virtual_args &&) override;
 
-        void add_route(route_t) override;
-
-    private:
         class impl;
 
         utils::pimpl_ptr<impl> pimpl;

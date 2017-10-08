@@ -2,6 +2,7 @@
 #include "database.hpp"
 #include <memory>
 #include <boost/smart_ptr/intrusive_ptr.hpp>
+#include <application/application.hpp>
 #include "application/context.hpp"
 
 class database_wrapper::impl final {
@@ -9,7 +10,7 @@ public:
 
     constexpr static const char *__name__ = "database";
 
-    impl() : route(__name__) {}
+    impl() {}
 
     ~impl() = default;
 
@@ -18,16 +19,22 @@ public:
     }
 
     void inject() {
-        context_->add_route(route);
     }
 
     template<std::size_t Size, typename F>
     void add_route(const char(&name)[Size], F &&f) {
-        route.add_route(std::string{name,Size-1}, f);
+        methods.emplace(std::string{name,Size-1}, f);
     }
+
+    application::result execute(const std::string&method,application::virtual_args &&args) {
+        auto it = methods.find(method);
+        return it->second(std::forward<application::virtual_args>(args));
+    }
+
     boost::intrusive_ptr<application::context_t> context_;
 private:
-    application::route_t route;
+
+    std::unordered_map<std::string, application::method> methods;
 
 };
 
@@ -58,7 +65,7 @@ database_wrapper::database_wrapper(const std::string &path) : pimpl(std::make_un
     std::cerr << path << std::endl;
     pimpl->add_route(
             "push_back",
-            [&, this](application::virtual_args args) -> application::result {
+            [&, this](application::virtual_args&& args) -> application::result {
                 auto arg_1 = block(1, 1);
                 push_block(arg_1);
             }
@@ -67,6 +74,10 @@ database_wrapper::database_wrapper(const std::string &path) : pimpl(std::make_un
 
 database_wrapper::~database_wrapper() {
     std::cerr<<"~database_wrapper"<<std::endl;
+}
+
+application::result database_wrapper::execute(const std::string&method,application::virtual_args &&args) {
+return pimpl->execute(method,std::forward<application::virtual_args>(args));
 }
 
 

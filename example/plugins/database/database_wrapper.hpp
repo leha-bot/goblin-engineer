@@ -4,7 +4,6 @@
 #include <iostream>
 #include "application/plugin.hpp"
 #include "application/pimpl.hpp"
-#include "application/rpc.hpp"
 #include "database.hpp"
 
 class database_wrapper final
@@ -21,6 +20,8 @@ public:
     void plugin_startup(const boost::program_options::variables_map&);
 
     void plugin_shutdown();
+
+    application::result execute(const std::string&,application::virtual_args&& );
 
     void plugin_initialization(application::context_t *);
 

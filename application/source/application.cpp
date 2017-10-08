@@ -1,12 +1,15 @@
 #include <unordered_map>
 #include <vector>
 #include <iostream>
-#include "../header/application/application.hpp"
-#include "../header/application/abstract_plugin.hpp"
+
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/asio.hpp>
+
+#include "../header/application/application.hpp"
+#include "../header/application/abstract_plugin.hpp"
+
 namespace application {
     class application::impl final {
     public:
@@ -28,37 +31,35 @@ namespace application {
             return storage_plugin.at(index).get();
         }
 
+        abstract_plugin *get_plugin(const std::string __name__) {
+            auto index = mapper.find(__name__);
+            return storage_plugin.at(index->second).get();
+        }
+
         state_t state(std::size_t index) const {
             return storage_plugin.at(index)->state();
         }
 
-        result invoke(const std::string &name_space, const std::string method, virtual_args args) {
-            auto it = space.find(name_space);
-            return methods.at(it->second).invoke(method, args);
+        result invoke(const std::string &name_space, const std::string method, virtual_args&& args) {
+            return get_plugin(name_space)->call(method, std::forward<virtual_args>(args));
         }
 
         std::vector<std::size_t> &current_state() {
             return state_plugin;
         }
 
-        void add_route(route_t __route__) {
-            const auto &name = __route__.name();
-            auto size = methods.size();
-            methods.emplace_back(__route__);
-            space.emplace(name, size);
-
-        }
-
-        boost::program_options::options_description app_options_;
-        boost::program_options::options_description cfg_options_;
-        boost::program_options::variables_map args_;
-        boost::filesystem::path data_dir;
-
         boost::asio::io_service* loop(){
             return io_serv.get();
         }
 
+        boost::program_options::variables_map args_;
+
     private:
+        boost::program_options::options_description app_options_;
+        boost::program_options::options_description cfg_options_;
+
+        boost::filesystem::path data_dir;
+
         std::shared_ptr< boost::asio::io_service >    io_serv;
         /// plugin
         std::vector<std::unique_ptr<abstract_plugin>> storage_plugin;
@@ -66,10 +67,6 @@ namespace application {
         std::vector<std::size_t> state_plugin;
         /// plugin
 
-        /// rpc
-        std::unordered_map<std::string, std::size_t> space;
-        std::vector<route_t> methods;
-        /// rpc
     };
 
     void application::shutdown() {
@@ -133,15 +130,11 @@ namespace application {
         std::cerr << "~application" << std::endl;
     }
 
-    result application::invoke(const std::string &name_space, const std::string method, virtual_args args) {
-        return pimpl->invoke(name_space, method, args);
+    result application::call(const std::string &name_space, const std::string &method, virtual_args &&args) {
+        return pimpl->invoke(name_space, method,std::forward<virtual_args >( args));
     }
 
     context_t *application::context() {
         return this;
-    }
-
-    void application::add_route(route_t __route__) {
-        pimpl->add_route(__route__);
     }
 }

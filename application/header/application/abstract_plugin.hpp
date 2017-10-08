@@ -3,8 +3,11 @@
 
 #include <cstdint>
 #include <string>
+
 #include <boost/program_options/variables_map.hpp>
+
 #include "forward.hpp"
+
 namespace application {
 
     enum class state_t : uint8_t {
@@ -18,10 +21,6 @@ namespace application {
     public:
         abstract_plugin();
 
-        void state(state_t state_);
-
-        state_t state() const;
-
         virtual void startup(const boost::program_options::variables_map &) = 0;
 
         virtual void shutdown()                                             = 0;
@@ -30,7 +29,13 @@ namespace application {
 
         virtual std::string name() const                                    = 0;
 
+        virtual result call(const std::string &, virtual_args &&)           = 0;
+
         virtual ~abstract_plugin() = default;
+
+        void state(state_t state_);
+
+        state_t state() const;
 
     private:
         state_t state_;

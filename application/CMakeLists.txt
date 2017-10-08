@@ -13,14 +13,12 @@ list(APPEND ${project}_header
         header/application/forward.hpp
         header/application/pimpl.hpp
         header/application/plugin.hpp
-        header/application/rpc.hpp
 )
 
 list(APPEND ${project}_source
         source/abstract_plugin.cpp
         source/application.cpp
         source/plugin.cpp
-        source/rpc.cpp
 )
 
 set(BOOST_COMPONENTS)

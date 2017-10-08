@@ -29,6 +29,8 @@ public:
 
     void plugin_initialization(application::context_t *);
 
+    application::result execute(const std::string&,application::virtual_args&& );
+
 private:
     class impl;
     application::utils::pimpl_ptr<impl>pimpl;
