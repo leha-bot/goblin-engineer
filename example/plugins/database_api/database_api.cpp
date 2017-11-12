@@ -3,13 +3,19 @@
 #include <unordered_map>
 #include "database_api.hpp"
 #include "application/context.hpp"
+#include "application/metadata.hpp"
 
 class database_api::impl final {
 public:
 
-    constexpr static const char *__name__ = "database_api";
 
-    impl() {}
+
+    impl():tmp(new application::metadata_t) {
+        tmp->name = "database_api";
+        tmp->major = 0;
+        tmp->minor = 0;
+        tmp->patchlevel = 0;
+    }
 
     ~impl() {}
 
@@ -24,7 +30,7 @@ public:
     void add_route(std::string name, F &f) {
         methods.emplace(name,f);
     }
-
+    application::metadata_t* tmp;
 private:
     std::unordered_map<std::string, application::method> methods;
     application::context_t *context_;
@@ -38,30 +44,30 @@ balance_output database_api::balance() const {
 }
 
 database_api::database_api() {
-    std::cerr<<impl::__name__<<std::endl;
+    std::cerr<<pimpl->tmp->name<<std::endl;
 }
 
 database_api::~database_api() {
-    std::cerr<<"~"<<impl::__name__<<std::endl;
+    std::cerr<<"~"<<pimpl->tmp->name<<std::endl;
 }
 
-std::string database_api::plugin_name() const {
-    std::cerr<<"plugin_name:"<<impl::__name__<<std::endl;
-    return impl::__name__;
+application::metadata_t* database_api::metadata() const {
+    std::cerr<<"plugin_name:"<<pimpl->tmp->name<<std::endl;
+    return pimpl->tmp;
 }
 
-void database_api::plugin_startup(const boost::program_options::variables_map &) {
-    std::cerr<<"plugin_startup :"<<impl::__name__<<std::endl;
+void database_api::startup(const boost::program_options::variables_map &) {
+    std::cerr<<"plugin_startup :"<<pimpl->tmp->name<<std::endl;
 }
 
-void database_api::plugin_shutdown() {
-    std::cerr<<"plugin_shutdown:"<<impl::__name__<<std::endl;
+void database_api::shutdown() {
+    std::cerr<<"plugin_shutdown:"<<pimpl->tmp->name<<std::endl;
 }
 
-void database_api::plugin_initialization(application::context_t *) {
-    std::cerr<<"plugin_initialization:"<<impl::__name__<<std::endl;
+void database_api::initialization(application::context_t *) {
+    std::cerr<<"plugin_initialization:"<<pimpl->tmp->name<<std::endl;
 }
 
-application::result database_api::execute(const std::string &, application::virtual_args &&) {
+application::result database_api::call(const std::string &, application::virtual_args &&) {
     return application::result();
 }

@@ -11,12 +11,12 @@ list(APPEND ${project}_header
         header/application/application.hpp
         header/application/context.hpp
         header/application/forward.hpp
+        header/application/metadata.hpp
         header/application/pimpl.hpp
         header/application/plugin.hpp
 )
 
 list(APPEND ${project}_source
-        source/abstract_plugin.cpp
         source/application.cpp
         source/plugin.cpp
 )

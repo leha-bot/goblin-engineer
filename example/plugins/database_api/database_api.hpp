@@ -14,22 +14,22 @@ struct balance_output final {
     }
 };
 
-class database_api final: public application::plugin<database_api>{
+class database_api final: public application::abstract_plugin{
 public:
     explicit database_api();
     ~database_api();
 
     balance_output balance() const;
 
-    std::string plugin_name() const;
+    application::metadata_t* metadata() const;
 
-    void plugin_startup(const boost::program_options::variables_map&);
+    void startup(const boost::program_options::variables_map&);
 
-    void plugin_shutdown();
+    void shutdown();
 
-    void plugin_initialization(application::context_t *);
+    void initialization(application::context_t *);
 
-    application::result execute(const std::string&,application::virtual_args&& );
+    application::result call(const std::string&,application::virtual_args&& );
 
 private:
     class impl;

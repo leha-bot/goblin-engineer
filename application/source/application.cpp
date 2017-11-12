@@ -8,9 +8,17 @@
 #include <boost/asio.hpp>
 
 #include "../header/application/application.hpp"
+#include "../header/application/plugin.hpp"
 #include "../header/application/abstract_plugin.hpp"
-
+#include "../header/application/metadata.hpp"
 namespace application {
+
+    inline std::string name(abstract_plugin* ptr){
+        std::string tmp;
+        tmp = ptr->metadata()->name;
+        return tmp;
+    }
+
     class application::impl final {
     public:
         impl(int argc, char **argv):io_serv(std::make_shared<boost::asio::io_service>()){
@@ -23,25 +31,25 @@ namespace application {
         void add_plugin(abstract_plugin *plugin) {
             auto size = storage_plugin.size();
             storage_plugin.emplace_back(plugin);
-            mapper.emplace(plugin->name(), size);
+            mapper.emplace(name(plugin), size);
             state_plugin.emplace_back(size);
         }
 
-        abstract_plugin *get_plugin(std::size_t index) {
-            return storage_plugin.at(index).get();
+        plugin&get_plugin(std::size_t index) {
+            return storage_plugin.at(index);
         }
 
-        abstract_plugin *get_plugin(const std::string __name__) {
+        plugin&get_plugin(const std::string __name__) {
             auto index = mapper.find(__name__);
-            return storage_plugin.at(index->second).get();
+            return storage_plugin.at(index->second);
         }
 
         state_t state(std::size_t index) const {
-            return storage_plugin.at(index)->state();
+            return storage_plugin.at(index).state();
         }
 
         result invoke(const std::string &name_space, const std::string method, virtual_args&& args) {
-            return get_plugin(name_space)->call(method, std::forward<virtual_args>(args));
+            return get_plugin(name_space).call(method, std::forward<virtual_args>(args));
         }
 
         std::vector<std::size_t> &current_state() {
@@ -62,7 +70,7 @@ namespace application {
 
         std::shared_ptr< boost::asio::io_service >    io_serv;
         /// plugin
-        std::vector<std::unique_ptr<abstract_plugin>> storage_plugin;
+        std::vector<plugin> storage_plugin;
         std::unordered_map<std::string, std::size_t> mapper;
         std::vector<std::size_t> state_plugin;
         /// plugin
@@ -73,7 +81,7 @@ namespace application {
 
         for (const auto &i:pimpl->current_state()) {
             if (pimpl->state(i) == state_t::started) {
-                pimpl->get_plugin(i)->shutdown();
+                pimpl->get_plugin(i).shutdown();
             }
         }
 
@@ -85,7 +93,7 @@ namespace application {
 
         for (const auto &i:pimpl->current_state()) {
             if (pimpl->state(i) == state_t::initialized) {
-                pimpl->get_plugin(i)->startup(pimpl->args_);
+                pimpl->get_plugin(i).startup(pimpl->args_);
             }
         }
 
@@ -114,7 +122,7 @@ namespace application {
 
         for (const auto &i:pimpl->current_state()) {
             if (pimpl->state(i) == state_t::registered) {
-                pimpl->get_plugin(i)->initialization(context());
+                pimpl->get_plugin(i).initialization(context());
             }
         }
 

@@ -5,72 +5,52 @@
 #include "abstract_plugin.hpp"
 namespace application {
 
-    template<typename PLUGIN>
-    struct allocator final {
 
+    enum class state_t : uint8_t {
+        registered, ///< the plugin is constructed but doesn't do anything
+        initialized, ///< the plugin has initlaized any state required but is idle
+        started, ///< the plugin is actively running
+        stopped ///< the plugin is no longer running
     };
 
-    template<typename PLUGIN, typename Allocator = allocator<PLUGIN>>
-    class plugin : public abstract_plugin {
+    class plugin final {
     public:
 
-        result call(const std::string &method, virtual_args &&args) override  final{
-            std::cerr << "execute:" << name() << std::endl;
-            if (state() == state_t::started) {
-                return self()->execute(method,std::forward<virtual_args>(args));
-            } else {
-                std::cerr << "error execute plugin: " << name() << std::endl;
-                return result();
-            }
-        }
+        plugin() = default;
 
-        void startup(const boost::program_options::variables_map &options) override final {
-            std::cerr << "startup plugin: " << name() << std::endl;
-            if (state() == state_t::initialized) {
-                state(state_t::started);
-                return self()->plugin_startup(options);
-            } else {
-                std::cerr << "error startup  plugin: " << name() << std::endl;
-            }
-        }
+        plugin(plugin&&) = default;
 
-        void initialization(context_t *context) override final {
-            std::cerr << "initialization plugin: " << name() << std::endl;
-            if (state() == state_t::registered) {
-                state(state_t::initialized);
-                return self()->plugin_initialization(context);
-            } else {
-                std::cerr << "error initialization plugin: " << name() << std::endl;
-            }
-        }
+        plugin&operator=(plugin&&) = default;
 
-        void shutdown() override final {
-            std::cerr << "shutdown plugin:" << name() << std::endl;
-            if (state() == state_t::started) {
-                state(state_t::stopped);
-                return self()->plugin_shutdown();
-            } else {
-                std::cerr << "error shutdown plugin:" << name() << std::endl;
-            }
+        plugin(abstract_plugin*ptr);
 
-        }
+        ~plugin() = default;
 
-        std::string name() const override final {
-            return self()->plugin_name();
-        }
+        result call(const std::string &method, virtual_args &&args);
 
-    protected:
-        plugin() : abstract_plugin() {}
+        void startup(const boost::program_options::variables_map &options);
 
-        virtual ~plugin() = default;
+        void initialization(context_t *context);
+
+        void shutdown();
+
+        metadata_t* metadata() const;
+
+        void state(state_t);
+
+        state_t state() const;
 
     private:
-        inline auto self() -> PLUGIN * {
-            return static_cast<PLUGIN *>(this);
+        state_t state_;
+
+        std::unique_ptr<abstract_plugin> plugin_;
+
+        inline auto self() -> abstract_plugin * {
+            return plugin_.get();
         }
 
-        inline auto self() const -> const PLUGIN * {
-            return static_cast<const PLUGIN *>(this);
+        inline auto self() const -> const abstract_plugin * {
+            return plugin_.get();
         }
     };
 }

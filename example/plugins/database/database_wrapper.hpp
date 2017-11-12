@@ -7,7 +7,7 @@
 #include "database.hpp"
 
 class database_wrapper final
-        : public application::plugin<database_wrapper>,
+        : public application::abstract_plugin,
           public database_t {
 public:
 
@@ -15,15 +15,15 @@ public:
 
     ~database_wrapper();
 
-    std::string plugin_name() const;
+    application::metadata_t* metadata() const;
 
-    void plugin_startup(const boost::program_options::variables_map&);
+    void startup(const boost::program_options::variables_map&);
 
-    void plugin_shutdown();
+    void shutdown();
 
-    application::result execute(const std::string&,application::virtual_args&& );
+    application::result call(const std::string&,application::virtual_args&& );
 
-    void plugin_initialization(application::context_t *);
+    void initialization(application::context_t *);
 
 private:
     class impl;
