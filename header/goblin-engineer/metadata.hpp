@@ -3,14 +3,14 @@
 #include <string>
 #include <vector>
 
-namespace application {
+namespace goblin_engineer {
 
     struct metadata_t {
         std::string name;
-        std::vector<std::string> dependency;
+        std::vector<metadata_t> dependency;
         std::size_t major;
         std::size_t minor;
-        std::size_t patchlevel;
+        std::size_t patch_level;
     };
 
 }

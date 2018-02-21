@@ -1,9 +1,8 @@
 #include <iostream>
-#include "../header/application/plugin.hpp"
-#include "../header/application/abstract_plugin.hpp"
-#include "../header/application/metadata.hpp"
-namespace application {
-
+#include "goblin-engineer/plugin.hpp"
+#include "goblin-engineer/abstract_plugin.hpp"
+#include "goblin-engineer/metadata.hpp"
+namespace goblin_engineer {
     inline std::string name(abstract_plugin* ptr){
         std::string tmp;
         tmp = ptr->metadata()->name;
@@ -31,7 +30,7 @@ namespace application {
         }
     }
 
-    void plugin::startup(const boost::program_options::variables_map &options) {
+    void plugin::startup(const YAML::Node &options) {
         std::cerr << "startup plugin: " << name(self()) << std::endl;
         if (state() == state_t::initialized) {
             state(state_t::started);
