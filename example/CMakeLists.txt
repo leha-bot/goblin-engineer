@@ -4,7 +4,14 @@ set(project example)
 
 project(${project})
 
-include_directories(../application/header/)
+#############################################################################################
+#YAML
+set(yaml_path ../dependency/yaml-cpp)
+set_property(TARGET yaml-cpp PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${YAML_INCLUDE_DIR} )
+find_package(${YAML_INCLUDE_DIR} REQUIRED PATHS ${yaml_path} )
+include_directories(../dependency/yaml-cpp/include)
+
+#############################################################################################
 
 list(APPEND ${project}_header
         plugins/database/block.hpp
@@ -23,20 +30,25 @@ list(APPEND ${project}_source
 
 )
 
-set(BOOST_COMPONENTS)
+include_directories (
+        SYSTEM
+        ../goblin-engineer
+)
 
-list(APPEND BOOST_COMPONENTS thread
-        date_time
-        system
-        filesystem
-        chrono
-        program_options
-        unit_test_framework
-        locale)
+add_executable(
+        ${project}
+        ${${project}_header}
+        ${${project}_source}
+)
 
+target_link_libraries (
+        ${project}
+        yaml-cpp
+        goblin-engineer
+)
 
-find_package (Boost 1.60 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
-include_directories (SYSTEM ${Boost_INCLUDE_DIR} ../application)
-
-add_executable(${project} ${${project}_header} ${${project}_source})
-target_link_libraries (${project} ${Boost_LIBRARIES} application)
+target_include_directories(
+        ${project}
+        PUBLIC
+        ${YAML_INCLUDE_DIR}
+)

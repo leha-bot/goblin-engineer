@@ -2,12 +2,11 @@
 #define PLUGIN_WRAPPER_DATABASE_HPP
 
 #include <iostream>
-#include "application/plugin.hpp"
-#include "application/pimpl.hpp"
+#include "goblin-engineer/plugin.hpp"
 #include "database.hpp"
 
 class database_wrapper final
-        : public application::abstract_plugin,
+        : public goblin_engineer::abstract_plugin,
           public database_t {
 public:
 
@@ -15,19 +14,19 @@ public:
 
     ~database_wrapper();
 
-    application::metadata_t* metadata() const;
+    goblin_engineer::metadata_t* metadata() const;
 
-    void startup(const boost::program_options::variables_map&);
+    void startup(const YAML::Node&);
 
     void shutdown();
 
-    application::result call(const std::string&,application::virtual_args&& );
+    goblin_engineer::result call(const std::string&,goblin_engineer::virtual_args&& );
 
-    void initialization(application::context_t *);
+    void initialization(goblin_engineer::context_t *);
 
 private:
     class impl;
-    application::utils::pimpl_ptr<impl> pimpl;
+    std::unique_ptr<impl> pimpl;
 
 };
 

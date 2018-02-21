@@ -1,23 +1,22 @@
 #include "database_wrapper.hpp"
 #include "database.hpp"
 #include <memory>
-#include <boost/smart_ptr/intrusive_ptr.hpp>
-#include "application/application.hpp"
-#include "application/context.hpp"
-#include "application/metadata.hpp"
+#include "goblin-engineer/application.hpp"
+#include "goblin-engineer/context.hpp"
+#include "goblin-engineer/metadata.hpp"
 
 class database_wrapper::impl final {
 public:
 
     constexpr static const char *__name__ = "database";
 
-    impl():tmp(new application::metadata_t) {
-        tmp->name="database";
+    impl():tmp(new goblin_engineer::metadata_t) {
+        tmp->name=__name__;
     }
 
     ~impl() = default;
 
-    void context(application::context_t *__context__) {
+    void context(goblin_engineer::context_t *__context__) {
         context_.reset(__context__);
     }
 
@@ -29,30 +28,29 @@ public:
         methods.emplace(std::string{name,Size-1}, f);
     }
 
-    application::result execute(const std::string&method,application::virtual_args &&args) {
+    goblin_engineer::result execute(const std::string&method,goblin_engineer::virtual_args &&args) {
         auto it = methods.find(method);
-        return it->second(std::forward<application::virtual_args>(args));
+        return it->second(std::forward<goblin_engineer::virtual_args>(args));
     }
 
-    boost::intrusive_ptr<application::context_t> context_;
-    application::metadata_t* tmp;
+    goblin_engineer::context context_;
+    goblin_engineer::metadata_t* tmp;
 private:
 
-    std::unordered_map<std::string, application::method> methods;
+    std::unordered_map<std::string, goblin_engineer::method> methods;
 
 };
 
-void database_wrapper::startup(const boost::program_options::variables_map&) {
+void database_wrapper::startup(const YAML::Node&) {
     std::cerr << "startup database_wrapper" << std::endl;
 }
 
 void database_wrapper::shutdown() {
     std::cerr << "shutdown database_wrapper" << std::endl;
-    boost::sp_adl_block::intrusive_ptr_release(pimpl->context_.get());
 
 }
 
-void database_wrapper::initialization(application::context_t *context) {
+void database_wrapper::initialization(goblin_engineer::context_t *context) {
     std::cerr << "initialization database_wrapper" << std::endl;
     if (context != nullptr) {
         pimpl->context(context);
@@ -60,16 +58,16 @@ void database_wrapper::initialization(application::context_t *context) {
     }
 }
 
-application::metadata_t* database_wrapper::metadata() const {
+goblin_engineer::metadata_t* database_wrapper::metadata() const {
     return pimpl->tmp;
 }
 
-database_wrapper::database_wrapper(const std::string &path) : pimpl(std::make_unique<impl>()) {
+database_wrapper::database_wrapper(const std::string &path) : pimpl(new impl()) {
     std::cerr<<"database_wrapper"<<std::endl;
     std::cerr << path << std::endl;
     pimpl->add_route(
             "push_back",
-            [&, this](application::virtual_args&& args) -> application::result {
+            [&, this](goblin_engineer::virtual_args&& args) -> goblin_engineer::result {
                 auto arg_1 = block(1, 1);
                 push_block(arg_1);
             }
@@ -80,8 +78,8 @@ database_wrapper::~database_wrapper() {
     std::cerr<<"~database_wrapper"<<std::endl;
 }
 
-application::result database_wrapper::call(const std::string&method,application::virtual_args &&args) {
-return pimpl->execute(method,std::forward<application::virtual_args>(args));
+goblin_engineer::result database_wrapper::call(const std::string&method,goblin_engineer::virtual_args &&args) {
+return pimpl->execute(method,std::forward<goblin_engineer::virtual_args>(args));
 }
 
 

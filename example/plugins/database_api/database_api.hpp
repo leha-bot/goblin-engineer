@@ -2,8 +2,8 @@
 #define PLUGIN_DATABASE_API_HPP
 
 
-#include <application/pimpl.hpp>
-#include "application/plugin.hpp"
+#include <yaml-cpp/yaml.h>
+#include "goblin-engineer/plugin.hpp"
 
 struct balance_output final {
     uint64_t arg;
@@ -14,26 +14,26 @@ struct balance_output final {
     }
 };
 
-class database_api final: public application::abstract_plugin{
+class database_api final: public goblin_engineer::abstract_plugin {
 public:
     explicit database_api();
     ~database_api();
 
     balance_output balance() const;
 
-    application::metadata_t* metadata() const;
+    goblin_engineer::metadata_t* metadata() const;
 
-    void startup(const boost::program_options::variables_map&);
+    void startup(const YAML::Node&);
 
     void shutdown();
 
-    void initialization(application::context_t *);
+    void initialization(goblin_engineer::context_t *);
 
-    application::result call(const std::string&,application::virtual_args&& );
+    goblin_engineer::result call(const std::string&,goblin_engineer::virtual_args&& );
 
 private:
     class impl;
-    application::utils::pimpl_ptr<impl>pimpl;
+    std::unique_ptr<impl>pimpl;
 };
 
 #endif //PLUGIN_DATABASE_API_HPP

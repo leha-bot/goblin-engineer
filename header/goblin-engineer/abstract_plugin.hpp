@@ -3,15 +3,15 @@
 
 #include <cstdint>
 
-#include <boost/program_options/variables_map.hpp>
+#include <yaml-cpp/yaml.h>
 
 #include "forward.hpp"
 
-namespace application {
+namespace goblin_engineer {
 
     struct abstract_plugin {
 
-        virtual void startup(const boost::program_options::variables_map &) = 0;
+        virtual void startup(const YAML::Node &)                            = 0;
 
         virtual void shutdown()                                             = 0;
 
@@ -21,7 +21,7 @@ namespace application {
 
         virtual result call(const std::string &, virtual_args &&)           = 0;
 
-        virtual ~abstract_plugin() = default;
+        virtual ~abstract_plugin()                                          = default;
     };
 
 }
