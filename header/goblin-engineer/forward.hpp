@@ -2,8 +2,9 @@
 #define PLUGIN_FORWARD_HPP
 
 #include <boost/any.hpp>
+#include <functional>
 
-namespace application {
+namespace goblin_engineer {
 
     struct context_t;
 
