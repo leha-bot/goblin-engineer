@@ -3,14 +3,15 @@
 
 #include <string>
 #include "abstract_plugin.hpp"
-namespace application {
+
+namespace goblin_engineer {
 
 
     enum class state_t : uint8_t {
-        registered, ///< the plugin is constructed but doesn't do anything
+        registered,  ///< the plugin is constructed but doesn't do anything
         initialized, ///< the plugin has initlaized any state required but is idle
-        started, ///< the plugin is actively running
-        stopped ///< the plugin is no longer running
+        started,     ///< the plugin is actively running
+        stopped      ///< the plugin is no longer running
     };
 
     class plugin final {
@@ -22,13 +23,13 @@ namespace application {
 
         plugin&operator=(plugin&&) = default;
 
-        plugin(abstract_plugin*ptr);
+        plugin(abstract_plugin*);
 
         ~plugin() = default;
 
         result call(const std::string &method, virtual_args &&args);
 
-        void startup(const boost::program_options::variables_map &options);
+        void startup(const YAML::Node &options);
 
         void initialization(context_t *context);
 
