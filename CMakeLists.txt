@@ -16,6 +16,13 @@ include_directories(SYSTEM dependency/yaml-cpp/include)
 #############################################################################################
 
 #############################################################################################
+#ACTOR-ZETA
+add_subdirectory(dependency/actor-zeta)
+include_directories(SYSTEM dependency/actor-zeta/libactor_zeta_core/)
+include_directories(SYSTEM dependency/actor-zeta/libactor_zeta_io)
+#############################################################################################
+
+#############################################################################################
 #BOOST
 set(BOOST_COMPONENTS)
 
@@ -63,6 +70,7 @@ target_link_libraries (
         ${project} PUBLIC
         ${Boost_LIBRARIES}
         yaml-cpp
+        actor-zeta
 )
 
 target_include_directories(
@@ -70,4 +78,6 @@ target_include_directories(
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/header
         dependency/yaml-cpp/include
+        dependency/actor-zeta/libactor_zeta_core
+        dependency/actor-zeta/libactor_zeta_io
 )
