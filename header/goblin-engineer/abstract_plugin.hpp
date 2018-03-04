@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include <yaml-cpp/yaml.h>
+#include <actor-zeta/actor/abstract_actor.hpp>
 
 #include "forward.hpp"
 
@@ -22,6 +23,19 @@ namespace goblin_engineer {
         virtual result call(const std::string &, virtual_args &&)           = 0;
 
         virtual ~abstract_plugin()                                          = default;
+    };
+
+    struct abstract_plugin_async:
+            public abstract_plugin,
+            public actor_zeta::actor::abstract_actor {
+
+        virtual ~abstract_plugin_async()                                    = default;
+    };
+
+
+    struct abstract_plugin_sync: public abstract_plugin {
+
+        virtual ~abstract_plugin_sync()                                     = default;
     };
 
 }

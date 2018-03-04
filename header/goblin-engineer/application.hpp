@@ -4,11 +4,13 @@
 #include "context.hpp"
 #include "forward.hpp"
 #include "configuration.hp"
+#include <actor-zeta/environment/environment.hpp>
 
 namespace goblin_engineer {
 
     class application final :
-            public context_t {
+            public context_t,
+            public actor_zeta::environment::abstract_environment {
     public:
 
         application();
@@ -26,6 +28,12 @@ namespace goblin_engineer {
         void shutdown();
 
     private:
+
+        int start() override ;
+
+        actor_zeta::executor::abstract_coordinator & manager_execution_device() override ;
+
+        actor_zeta::environment::cooperation & manager_group() override ;
 
         context_t *context();
 

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "abstract_plugin.hpp"
+#include <actor-zeta/actor/actor.hpp>
 
 namespace goblin_engineer {
 
@@ -14,7 +15,7 @@ namespace goblin_engineer {
         stopped      ///< the plugin is no longer running
     };
 
-    class plugin final {
+    class plugin final : public actor_zeta::actor::actor  {
     public:
 
         plugin() = default;
