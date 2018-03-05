@@ -16,6 +16,13 @@ include_directories(SYSTEM dependency/yaml-cpp/include)
 #############################################################################################
 
 #############################################################################################
+#ACTOR-ZETA
+add_subdirectory(dependency/actor-zeta)
+include_directories(SYSTEM dependency/actor-zeta/libactor_zeta_core/)
+include_directories(SYSTEM dependency/actor-zeta/libactor_zeta_io)
+#############################################################################################
+
+#############################################################################################
 #BOOST
 set(BOOST_COMPONENTS)
 
