@@ -42,6 +42,7 @@ find_package (Boost 1.60 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 include_directories (SYSTEM ${Boost_INCLUDE_DIR})
 #############################################################################################
 
+
 include_directories(header)
 
 list(APPEND ${project}_header

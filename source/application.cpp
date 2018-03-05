@@ -6,10 +6,15 @@
 #include <boost/program_options/parsers.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/asio.hpp>
+#include <actor-zeta/environment/cooperation.hpp>
+#include <actor-zeta/executor/abstract_coordinator.hpp>
+#include <actor-zeta/executor/coordinator.hpp>
+#include <actor-zeta/executor/policy/work_sharing.hpp>
 
 #include "goblin-engineer/application.hpp"
 #include "goblin-engineer/plugin.hpp"
 #include "goblin-engineer/metadata.hpp"
+
 
 namespace goblin_engineer {
 
@@ -22,7 +27,8 @@ namespace goblin_engineer {
     struct application::impl final {
         impl() :
             io_serv(new boost::asio::io_service),
-            background_(new boost::thread_group) {
+            background_(new boost::thread_group),
+            coordinator_(new actor_zeta::executor::coordinator<actor_zeta::executor::work_sharing>(1, 1000)) {
         }
 
         ~impl() = default;
@@ -74,6 +80,9 @@ namespace goblin_engineer {
         boost::filesystem::path                  plugins_dir;
         std::set<std::size_t>                    signal;
         ///Config
+
+        actor_zeta::environment::cooperation cooperation_;
+        actor_zeta::executor::abstract_coordinator* coordinator_;
 
     private:
 
@@ -159,6 +168,19 @@ namespace goblin_engineer {
 
     boost::thread_group &application::background() const {
         return pimpl->background();
+    }
+
+    int application::start() {
+        manager_execution_device().start();
+        return 0;
+    }
+
+    actor_zeta::executor::abstract_coordinator &application::manager_execution_device() {
+        return *pimpl->coordinator_;
+    }
+
+    actor_zeta::environment::cooperation &application::manager_group() {
+        return  pimpl->cooperation_;
     }
 
     void application::load_config(configuration&&f) {
