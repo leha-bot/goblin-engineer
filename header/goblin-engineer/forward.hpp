@@ -1,8 +1,8 @@
-#ifndef PLUGIN_FORWARD_HPP
-#define PLUGIN_FORWARD_HPP
+#pragma once
 
 #include <boost/any.hpp>
 #include <functional>
+#include <vector>
 
 namespace goblin_engineer {
 
@@ -12,7 +12,7 @@ namespace goblin_engineer {
 
     struct metadata_t;
 
-    using result = boost::any;
+    using result = void;
 
     using virtual_args = std::vector<boost::any>;
 
