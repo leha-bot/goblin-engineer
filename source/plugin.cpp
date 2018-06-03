@@ -18,12 +18,15 @@ namespace goblin_engineer {
     }
 
     plugin::plugin(abstract_plugin *ptr) :
-            plugin_(ptr), state_(state_t::registered){}
+            state_(state_t::registered),
+            plugin_(ptr){
+
+    }
 
     result plugin::call(const std::string &method, virtual_args &&args) {
         std::cerr << "execute:" << name(self()) << std::endl;
         if (state() == state_t::started) {
-            return self()->call(method,std::forward<virtual_args>(args));
+            return self()->send(method, std::forward<virtual_args>(args));
         } else {
             std::cerr << "error execute plugin: " << name(self()) << std::endl;
             return result();

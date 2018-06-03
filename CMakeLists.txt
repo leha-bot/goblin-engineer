@@ -38,7 +38,7 @@ list(APPEND BOOST_COMPONENTS
 )
 
 
-find_package (Boost 1.60 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
+find_package (Boost 1.67 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 include_directories (SYSTEM ${Boost_INCLUDE_DIR})
 #############################################################################################
 
