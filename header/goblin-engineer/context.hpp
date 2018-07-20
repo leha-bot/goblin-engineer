@@ -1,16 +1,12 @@
-#ifndef PLUGIN_CONTEXT_HPP
-#define PLUGIN_CONTEXT_HPP
+#pragma once
 
 #include "forward.hpp"
-
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
 namespace goblin_engineer {
 
     struct context_t {
-
-        virtual result call(const std::string &name_space, const std::string &method, virtual_args &&args) = 0;
 
         virtual boost::asio::io_service &main_loop() const = 0;
 
@@ -54,5 +50,3 @@ namespace goblin_engineer {
         std::unique_ptr<context_t> ptr_;
     };
 }
-
-#endif //PLUGIN_CONTEXT_HPP

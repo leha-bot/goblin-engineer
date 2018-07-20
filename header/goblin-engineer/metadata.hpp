@@ -1,17 +1,20 @@
-#ifndef METADATA_HPP
-#define METADATA_HPP
+#pragma once
 #include <string>
 #include <vector>
 
 namespace goblin_engineer {
 
-    struct metadata_t {
+    struct metadata_plugin {
         std::string name;
-        std::vector<metadata_t> dependency;
+        std::vector<metadata_plugin> dependency;
         std::size_t major;
         std::size_t minor;
         std::size_t patch_level;
     };
 
+
+    struct metadata_service {
+        std::string name;
+    };
+
 }
-#endif //PROJECT_METADATA_HPP

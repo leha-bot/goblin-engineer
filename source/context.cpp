@@ -4,8 +4,7 @@ namespace goblin_engineer {
 
     context::~context() {
         if (ptr_.get() != nullptr) {
-            auto *tmp = ptr_.release();
-            tmp = nullptr;
+            ptr_.release();
         }
     }
 
@@ -20,11 +19,11 @@ namespace goblin_engineer {
     }
 
     auto context::operator*() const noexcept -> context_t & {
-        return *ptr_.get();
+        return *ptr_;
     }
 
     auto context::operator*() noexcept -> context_t & {
-        return *ptr_.get();
+        return *ptr_;
     }
 
     context::operator bool() {

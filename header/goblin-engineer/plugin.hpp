@@ -1,21 +1,19 @@
-#ifndef PLUGIN_PLUGIN_H
-#define PLUGIN_PLUGIN_H
+#pragma once
 
 #include <string>
-#include "abstract_plugin.hpp"
-#include <actor-zeta/actor/actor.hpp>
+#include <goblin-engineer/abstract_plugin.hpp>
 
 namespace goblin_engineer {
 
 
-    enum class state_t : uint8_t {
+    enum class plugin_state : char {
         registered,  ///< the plugin is constructed but doesn't do anything
         initialized, ///< the plugin has initlaized any state required but is idle
         started,     ///< the plugin is actively running
         stopped      ///< the plugin is no longer running
     };
-
-    class plugin final : public actor_zeta::actor::actor  {
+    /// contaner service and mini local env
+    class plugin final {
     public:
 
         plugin() = default;
@@ -28,22 +26,20 @@ namespace goblin_engineer {
 
         ~plugin() = default;
 
-        result call(const std::string &method, virtual_args &&args);
-
         void startup(const YAML::Node &options);
 
         void initialization(context_t *context);
 
         void shutdown();
 
-        metadata_t* metadata() const;
+        void  metadata(metadata_plugin*) const;
 
-        void state(state_t);
+        void state(plugin_state);
 
-        state_t state() const;
+        plugin_state state() const;
 
     private:
-        state_t state_;
+        plugin_state state_;
 
         std::unique_ptr<abstract_plugin> plugin_;
 
@@ -56,4 +52,3 @@ namespace goblin_engineer {
         }
     };
 }
-#endif //PLUGIN_PLUGIN_H
