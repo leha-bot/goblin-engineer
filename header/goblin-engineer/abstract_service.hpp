@@ -19,9 +19,28 @@ namespace goblin_engineer {
     using actor_zeta::environment::abstract_group;
 
     using actor_zeta::actor::abstract_actor;
+
     using actor_zeta::actor::actor;
 
-    struct abstract_service {
+    struct pipe {
+
+        virtual ~pipe()                                                     = default;
+
+        virtual bool send(msg&&)                                            = 0;
+
+        virtual void input(service &s)                                      = 0;
+
+        virtual void output(service &s)                                     = 0;
+
+        virtual auto input() const -> const std::string&                    = 0;
+
+        virtual auto output() const -> const std::string&                   = 0;
+
+        virtual auto get_service(const std::string&) -> service&            = 0;
+
+    };
+
+    struct abstract_service : public pipe {
 
         virtual ~abstract_service()                                         = default;
 
@@ -37,15 +56,7 @@ namespace goblin_engineer {
 
         virtual void join(service & )                                       = 0;
 
-        virtual bool send(msg&&)                                            = 0;
-
-        virtual void input(service &s)                                      = 0;
-
-        virtual void output(service &s)                                     = 0;
-
-        virtual auto input() const -> const std::string&                    = 0;
-
-        virtual auto output() const -> const std::string&                   = 0;
+        pipe* to_pipe();
 
     };
 
@@ -88,11 +99,15 @@ namespace goblin_engineer {
 
         virtual void join(service &s);
 
+        auto get_service(const std::string&) -> service&;
+
     protected:
+
         template <typename F>
         void add(const std::string& name, F&&f){
             method_table.emplace(name,std::forward<F>(f));
         }
+
         std::string input_;
         std::string output_;
         std::unordered_map<std::string,method> method_table;

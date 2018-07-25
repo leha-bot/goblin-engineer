@@ -1,7 +1,9 @@
 #include <goblin-engineer/abstract_service.hpp>
+
 #include <cassert>
-#include <goblin-engineer/service.hpp>
+
 #include <goblin-engineer/metadata.hpp>
+
 namespace goblin_engineer {
 
 
@@ -10,13 +12,13 @@ namespace goblin_engineer {
     }
 
     auto abstract_service_managed::pack(actor_zeta::environment::group &&group_) -> void {
-        this-> group_ = std::move(group_);
+        this->group_ = std::move(group_);
     }
 
     void abstract_service_managed::join(service &s) {
-        auto* raw = s.get();
-        assert(raw->managed==true);
-        auto* srvce = static_cast<abstract_service_managed*>(s.get());
+        auto *raw = s.get();
+        assert(raw->managed == true);
+        auto *srvce = static_cast<abstract_service_managed *>(s.get());
 
         group()->join(srvce->group());
 
@@ -26,30 +28,30 @@ namespace goblin_engineer {
         return group_;
     }
 
-    bool abstract_service_managed::send(msg&&) {
+    bool abstract_service_managed::send(msg &&) {
         ///group_->send(s)
     }
 
     void abstract_service_unmanaged::join(service &s) {
-        auto*raw = s.get();
+        auto *raw = s.get();
         assert(raw->managed == false);
-
-
-
+        auto* meta_data = new metadata_service;
+        s.metadata(meta_data);
+        services.emplace(meta_data->name,s.get());
 
     }
 
-    bool  abstract_service_unmanaged::send(msg &&message) {
-            bool result;
-            auto it = method_table.find(message.method);
-            if( it != method_table.end() ){
-                it->second(std::move(message));
-                result = true;
-            } else {
-                result = false;
-            }
+    bool abstract_service_unmanaged::send(msg &&message) {
+        bool result;
+        auto it = method_table.find(message.method);
+        if (it != method_table.end()) {
+            it->second(std::move(message));
+            result = true;
+        } else {
+            result = false;
+        }
 
-            return result;
+        return result;
 
     }
 
@@ -73,6 +75,14 @@ namespace goblin_engineer {
 
     auto abstract_service_unmanaged::output() const -> const std::string & {
         return output_;
+    }
+
+    auto abstract_service_unmanaged::get_service(const std::string& name) -> service & {
+        return services.at(name);
+    }
+
+    pipe *abstract_service::to_pipe() {
+        return static_cast<pipe *>(this);
     }
 }
 

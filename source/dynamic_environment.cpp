@@ -19,6 +19,7 @@
 #include <goblin-engineer/service.hpp>
 #include <goblin-engineer/plugin.hpp>
 #include <goblin-engineer/abstract_service.hpp>
+#include <goblin-engineer/configuration.hpp>
 
 namespace goblin_engineer {
 
@@ -93,15 +94,12 @@ namespace goblin_engineer {
         }
 
         YAML::Node &configuration() {
-            return configuration_;
+            return dynamic_configuration;
         }
 
         ///Config
-        YAML::Node                               configuration_;
-        std::set<std::string>                    plgins_initialize;
-        boost::filesystem::path                  data_dir;
-        boost::filesystem::path                  plugins_dir;
-        std::set<std::size_t>                    signal;
+        YAML::Node                               dynamic_configuration;
+        goblin_engineer::configuration           configuration_;
         ///Config
 
         actor_zeta::environment::cooperation cooperation_;
@@ -170,8 +168,8 @@ namespace goblin_engineer {
                 }
         );
 
-        if(!pimpl->signal.empty()){
-            for(auto&i:pimpl->signal) {
+        if(!pimpl->configuration_.signal.empty()){
+            for(auto&i:pimpl->configuration_.signal) {
                 std::shared_ptr<boost::asio::signal_set> sigint_set(new boost::asio::signal_set(main_loop(), i));
                 sigint_set->async_wait(
                         [sigint_set, this](const boost::system::error_code &/*err*/, int /*num*/) {
@@ -186,7 +184,7 @@ namespace goblin_engineer {
             i.second.initialization(context());
         }
 
-        for(const auto&i:pimpl->plgins_initialize) {
+        for(const auto&i:pimpl->configuration_.plugins) {
             auto& plugin = pimpl->get_plugin(i);
             if (plugin.state() == plugin_state ::registered) {
                 plugin.initialization(context());
@@ -237,11 +235,8 @@ namespace goblin_engineer {
     }
 
     void dynamic_environment::load_config(configuration&&f) {
-        pimpl->configuration_    = YAML::LoadFile(f.config_path);
-        pimpl->plgins_initialize = f.plugins; //TODO Boost.DLL
-        pimpl->data_dir          = f.data_dir;
-        pimpl->plugins_dir       = f.plugins_dir;
-        pimpl->signal            = f.signal;
+        pimpl->dynamic_configuration = YAML::LoadFile(f.config_path);
+        pimpl->configuration_        =  f;
     }
 
     auto dynamic_environment::add_service(abstract_service_unmanaged *service_ptr) -> service & {
