@@ -31,6 +31,7 @@ list(APPEND BOOST_COMPONENTS
         date_time
         system
         filesystem
+        timer
         chrono
         program_options
         unit_test_framework
@@ -46,19 +47,23 @@ include_directories (SYSTEM ${Boost_INCLUDE_DIR})
 include_directories(header)
 
 list(APPEND ${project}_header
-        header/goblin-engineer/abstract_plugin.hpp
-        header/goblin-engineer/application.hpp
+        header/goblin-engineer/abstract_service.hpp
+        header/goblin-engineer/dynamic_environment.hpp
         header/goblin-engineer/context.hpp
         header/goblin-engineer/forward.hpp
         header/goblin-engineer/metadata.hpp
+        header/goblin-engineer/service.hpp
+        header/goblin-engineer/configuration.hpp
         header/goblin-engineer/plugin.hpp
-        header/goblin-engineer/configuration.hp
+        header/goblin-engineer/service.hpp
 )
 
 list(APPEND ${project}_source
-        source/application.cpp
-        source/plugin.cpp
+        source/abstract_service.cpp
         source/context.cpp
+        source/dynamic_environment.cpp
+        source/plugin.cpp
+        source/service.cpp
 )
 
 add_library(
@@ -71,7 +76,8 @@ target_link_libraries (
         ${project} PUBLIC
         ${Boost_LIBRARIES}
         yaml-cpp
-        actor-zeta
+        actor-zeta-core
+        actor-zeta-io
 )
 
 target_include_directories(
@@ -79,6 +85,6 @@ target_include_directories(
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/header
         dependency/yaml-cpp/include
-        dependency/actor-zeta/libactor_zeta_core
-        dependency/actor-zeta/libactor_zeta_io
+        dependency/actor-zeta/core
+        dependency/actor-zeta/io
 )

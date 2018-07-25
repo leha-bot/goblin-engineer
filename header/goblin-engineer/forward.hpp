@@ -1,21 +1,26 @@
 #pragma once
 
-#include <boost/any.hpp>
 #include <functional>
 #include <vector>
+#include <boost/any.hpp>
 
 namespace goblin_engineer {
 
     struct context_t;
 
+    class service;
+
+    class plugin;
+
     struct abstract_plugin;
 
-    struct metadata_t;
+    struct abstract_service;
 
-    using result = void;
+    struct abstract_service_unmanaged;
 
-    using virtual_args = std::vector<boost::any>;
+    struct abstract_service_managed;
 
-    using method = std::function<result(virtual_args&&)>;
+    struct metadata_plugin;
+
+    struct metadata_service;
 }
-#endif //PLUGIN_FORWARD_HPP
