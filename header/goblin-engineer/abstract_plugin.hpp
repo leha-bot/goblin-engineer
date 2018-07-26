@@ -2,13 +2,12 @@
 #include <cstdint>
 
 #include <yaml-cpp/yaml.h>
-#include <goblin-engineer/message.hpp>
-#include <actor-zeta/environment/abstract_group.hpp>
+#include <goblin-engineer/context.hpp>
+#include <goblin-engineer/metadata.hpp>
 
 namespace goblin_engineer {
     /// container service
     struct abstract_plugin {
-        using actor_zeta::environment::abstract_group;
 
         virtual void initialization(context_t *)                            = 0;
 
