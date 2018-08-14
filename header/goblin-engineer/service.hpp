@@ -2,20 +2,13 @@
 
 #include <string>
 #include <atomic>
-#include <yaml-cpp/yaml.h>
+#include <memory>
 #include <goblin-engineer/forward.hpp>
 
 
 namespace goblin_engineer {
 
-    enum class service_state : char {
-        registered,  ///< the service is constructed but doesn't do anything
-        initialized, ///< the service has initlaized any state required but is idle
-        started,     ///< the service is actively running
-        stopped      ///< the service is no longer running
-    };
-
-    class service final   {
+    class service final {
     public:
 
         service() = default;
@@ -28,9 +21,7 @@ namespace goblin_engineer {
 
         ~service() = default;
 
-        void startup(const YAML::Node &options);
-
-        void initialization(context_t *context);
+        void startup(context_t *);
 
         void shutdown();
 
@@ -53,20 +44,14 @@ namespace goblin_engineer {
         service_state state() const;
 
     private:
-        std::atomic_bool load_metadata;
+        bool load_metadata;
         std::unique_ptr<metadata_service> metadata_;
-        service_state state_;
+        std::unique_ptr<abstract_service> service_;
 
-        std::unique_ptr<abstract_service> plugin_;
+        auto self() -> abstract_service *;
 
-        inline auto self() -> abstract_service * {
-            return plugin_.get();
-        }
+        auto self() const -> const abstract_service *;
 
-        inline auto self() const -> const abstract_service * {
-            return plugin_.get();
-        }
     };
-
 
 }

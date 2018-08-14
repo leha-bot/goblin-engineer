@@ -14,35 +14,24 @@ namespace goblin_engineer {
     }
 
     void service::state(service_state state_) {
-        this->state_ = state_;
+        service_.get()->state_ = state_;
     }
 
     service_state service::state() const {
-        return state_;
+        return service_.get()->state_;
     }
 
     service::service(abstract_service *ptr) :
-            state_(service_state::registered),
-            plugin_(ptr){
+            service_(ptr){
     }
     
-    void service::startup(const YAML::Node &options) {
+    void service::startup(context_t *context) {
         std::cerr << "startup service: " << name(self()) << std::endl;
         if (state() == service_state::initialized) {
             state(service_state::started);
-            return self()->startup(options);
+            return self()->startup(context);
         } else {
             std::cerr << "error startup  service: " << name(self()) << std::endl;
-        }
-    }
-
-    void service::initialization(context_t *context) {
-        std::cerr << "initialization service: " << name(self()) << std::endl;
-        if (state() == service_state::registered) {
-            state(service_state::initialized);
-            return self()->initialization(context);
-        } else {
-            std::cerr << "error initialization service: " << name(self()) << std::endl;
         }
     }
 
@@ -62,26 +51,34 @@ namespace goblin_engineer {
     }
 
     auto service::operator->() const noexcept -> abstract_service * {
-        return plugin_.get();
+        return service_.get();
     }
 
     auto service::operator*() const noexcept -> abstract_service & {
-        return *plugin_;
+        return *service_;
     }
 
     auto service::operator->() noexcept -> abstract_service * {
-        return plugin_.get();
+        return service_.get();
     }
 
     auto service::operator*() noexcept -> abstract_service & {
-        return *plugin_;
+        return *service_;
     }
 
     auto service::get() noexcept -> abstract_service * {
-        return plugin_.get();
+        return service_.get();
     }
 
     auto service::get() const noexcept -> abstract_service * {
-        return plugin_.get();
+        return service_.get();
+    }
+
+    auto service::self() -> abstract_service * {
+        return service_.get();
+    }
+
+    auto service::self() const -> const abstract_service * {
+        return service_.get();
     }
 }

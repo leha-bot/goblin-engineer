@@ -1,6 +1,8 @@
 #pragma once
 
-#include <goblin-engineer/forward.hpp>
+#include <vector>
+#include <functional>
+#include <boost/any.hpp>
 
 namespace goblin_engineer {
 

@@ -84,5 +84,7 @@ namespace goblin_engineer {
     pipe *abstract_service::to_pipe() {
         return static_cast<pipe *>(this);
     }
+
+    abstract_service::abstract_service() :state_(service_state::initialized){}
 }
 

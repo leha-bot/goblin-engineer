@@ -25,21 +25,21 @@ namespace goblin_engineer {
         plugin_(ptr){
     }
 
-    void plugin::startup(const YAML::Node &options) {
+    void plugin::startup(context_t*context) {
         std::cerr << "startup plugin: " << name(self()) << std::endl;
         if (state() == plugin_state::initialized) {
             state(plugin_state::started);
-            return self()->startup(options);
+            return self()->startup(context);
         } else {
             std::cerr << "error startup  plugin: " << name(self()) << std::endl;
         }
     }
 
-    void plugin::initialization(context_t *context) {
+    void plugin::initialization() {
         std::cerr << "initialization plugin: " << name(self()) << std::endl;
         if (state() == plugin_state::registered) {
             state(plugin_state::initialized);
-            return self()->initialization(context);
+            return self()->initialization();
         } else {
             std::cerr << "error initialization plugin: " << name(self()) << std::endl;
         }
@@ -58,5 +58,13 @@ namespace goblin_engineer {
 
     void plugin::metadata(metadata_plugin* metadata) const {
         self()->metadata(metadata);
+    }
+
+    auto plugin::self() -> abstract_plugin * {
+        return plugin_.get();
+    }
+
+    auto plugin::self() const -> const abstract_plugin * {
+        return plugin_.get();
     }
 }

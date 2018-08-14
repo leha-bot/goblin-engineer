@@ -4,15 +4,11 @@
 #include <queue>
 #include <unordered_map>
 
-#include <yaml-cpp/yaml.h>
-
 #include <goblin-engineer/message.hpp>
 #include <goblin-engineer/service.hpp>
 
 #include <actor-zeta/environment/abstract_group.hpp>
 #include <actor-zeta/environment/group.hpp>
-
-
 
 namespace goblin_engineer {
 
@@ -42,15 +38,17 @@ namespace goblin_engineer {
 
     struct abstract_service : public pipe {
 
+        abstract_service();
+
         virtual ~abstract_service()                                         = default;
 
         static constexpr bool managed = false;
 
-        virtual void startup(const YAML::Node &)                            = 0;
+        static constexpr bool in_plugin = false;
+
+        virtual void startup(context_t *)                                   = 0;
 
         virtual void shutdown()                                             = 0;
-
-        virtual void initialization(context_t *)                            = 0;
 
         virtual void metadata(metadata_service*) const                      = 0;
 
@@ -58,6 +56,7 @@ namespace goblin_engineer {
 
         pipe* to_pipe();
 
+        service_state state_;
     };
 
 
@@ -83,7 +82,8 @@ namespace goblin_engineer {
 
     };
 
-    struct abstract_service_unmanaged: public abstract_service {
+    struct abstract_service_unmanaged:
+            public abstract_service {
 
         virtual ~abstract_service_unmanaged()                               = default;
 
@@ -104,7 +104,7 @@ namespace goblin_engineer {
     protected:
 
         template <typename F>
-        void add(const std::string& name, F&&f){
+        inline void add(const std::string& name, F&&f){
             method_table.emplace(name,std::forward<F>(f));
         }
 

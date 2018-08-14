@@ -1,12 +1,16 @@
 #pragma once
 
-#include "forward.hpp"
+#include <goblin-engineer/forward.hpp>
+#include <goblin-engineer/dynamic.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+#include <goblin-engineer/dynamic.hpp>
 
 namespace goblin_engineer {
 
     struct context_t {
+
+        virtual auto  config() const -> dynamic_config&    = 0;
 
         virtual boost::asio::io_service &main_loop() const = 0;
 
@@ -15,7 +19,6 @@ namespace goblin_engineer {
         virtual ~context_t() = default;
 
     };
-
 
     // semantics smart ptr
     class context final {

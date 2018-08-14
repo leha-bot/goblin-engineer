@@ -1,17 +1,9 @@
 #pragma once
 
-#include <string>
 #include <goblin-engineer/abstract_plugin.hpp>
 
 namespace goblin_engineer {
 
-
-    enum class plugin_state : char {
-        registered,  ///< the plugin is constructed but doesn't do anything
-        initialized, ///< the plugin has initlaized any state required but is idle
-        started,     ///< the plugin is actively running
-        stopped      ///< the plugin is no longer running
-    };
     /// contaner service and mini local env
     class plugin final {
     public:
@@ -26,9 +18,9 @@ namespace goblin_engineer {
 
         ~plugin() = default;
 
-        void startup(const YAML::Node &options);
+        void startup(context_t *);
 
-        void initialization(context_t *context);
+        void initialization();
 
         void shutdown();
 
@@ -43,12 +35,8 @@ namespace goblin_engineer {
 
         std::unique_ptr<abstract_plugin> plugin_;
 
-        inline auto self() -> abstract_plugin * {
-            return plugin_.get();
-        }
+        auto self() -> abstract_plugin *;
 
-        inline auto self() const -> const abstract_plugin * {
-            return plugin_.get();
-        }
+        auto self() const -> const abstract_plugin *;
     };
 }

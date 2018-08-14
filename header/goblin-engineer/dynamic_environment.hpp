@@ -13,17 +13,16 @@ namespace goblin_engineer {
             public actor_zeta::environment::abstract_environment {
     public:
 
-        dynamic_environment();
+        dynamic_environment(configuration&&);
 
         ~dynamic_environment();
 
-        auto add_service(abstract_service_unmanaged*) -> service&;
-
-        auto add_service(abstract_service_managed*) -> service&;
+        template <typename SERVICE,typename ...Args>
+        auto add_service(Args &&...args) -> service& {
+            return add_service(new SERVICE(static_cast<context_t*>(this),std::forward<Args>(args)...));
+        }
 
         auto add_plugin(abstract_plugin *) -> void;
-
-        void load_config(configuration&&);
 
         void initialize();
 
@@ -32,6 +31,12 @@ namespace goblin_engineer {
         void shutdown();
 
     private:
+
+        auto add_service(abstract_service_unmanaged*) -> service&;
+
+        auto add_service(abstract_service_managed*) -> service&;
+
+        auto  config() const -> dynamic_config&;
 
         int start() override ;
 
@@ -49,16 +54,6 @@ namespace goblin_engineer {
 
         std::unique_ptr<impl> pimpl;
     };
-
-    template<typename SERVICE, typename ...Args>
-    auto add_service(dynamic_environment &app, Args &&...args) -> service& {
-        return app.add_service(new SERVICE(std::forward<Args>(args)...));
-    }
-
-    template<typename SERVICE>
-    auto add_service(dynamic_environment &app) -> service& {
-        return app.add_service(new SERVICE());
-    }
 
     inline auto add_plugin(dynamic_environment &app, abstract_plugin* plugin ) -> void {
         app.add_plugin(plugin);
