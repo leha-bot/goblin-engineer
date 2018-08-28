@@ -28,9 +28,13 @@ namespace goblin_engineer {
         return group_;
     }
 
-    bool abstract_service_managed::send(msg &&) {
+    bool abstract_service_managed::send(message &&) {
         ///group_->send(s)
+        ///TODO implementation
+        return false;
     }
+
+    abstract_service_managed::~abstract_service_managed() = default;
 
     void abstract_service_unmanaged::join(service &s) {
         auto *raw = s.get();
@@ -41,50 +45,37 @@ namespace goblin_engineer {
 
     }
 
-    bool abstract_service_unmanaged::send(msg &&message) {
+    bool abstract_service_unmanaged::send(message &&message) {
+
         bool result;
-        auto it = method_table.find(message.method);
-        if (it != method_table.end()) {
-            it->second(std::move(message));
-            result = true;
+
+        auto current_name = name();
+        if(message.sender == current_name ) {
+            auto it = method_table.find(message.method);
+            if (it != method_table.end()) {
+                it->second(std::move(message));
+                result = true;
+            } else {
+                result = false;
+            }
         } else {
-            result = false;
+            auto& service = services.at(message.sender);
+            result = service->send(std::move(message));
         }
 
         return result;
 
     }
 
-    void abstract_service_unmanaged::input(service &s) {
-        std::unique_ptr<metadata_service> service_(new metadata_service);
-        s.metadata(service_.get());
-        join(s);
-        input_ = service_->name;
-    }
+    abstract_service_unmanaged::~abstract_service_unmanaged()  = default;
 
-    void abstract_service_unmanaged::output(service &s) {
-        std::unique_ptr<metadata_service> service_(new metadata_service);
-        s.metadata(service_.get());
-        join(s);
-        output_ = service_->name;
-    }
-
-    auto abstract_service_unmanaged::input() const -> const std::string & {
-        return input_;
-    }
-
-    auto abstract_service_unmanaged::output() const -> const std::string & {
-        return output_;
-    }
-
-    auto abstract_service_unmanaged::get_service(const std::string& name) -> service & {
-        return services.at(name);
-    }
 
     pipe *abstract_service::to_pipe() {
         return static_cast<pipe *>(this);
     }
 
     abstract_service::abstract_service() :state_(service_state::initialized){}
+
+    abstract_service::~abstract_service() = default;
 }
 

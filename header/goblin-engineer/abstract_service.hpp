@@ -22,17 +22,9 @@ namespace goblin_engineer {
 
         virtual ~pipe()                                                     = default;
 
-        virtual bool send(msg&&)                                            = 0;
+        virtual bool send(message&&)                                        = 0;
 
-        virtual void input(service &s)                                      = 0;
-
-        virtual void output(service &s)                                     = 0;
-
-        virtual auto input() const -> const std::string&                    = 0;
-
-        virtual auto output() const -> const std::string&                   = 0;
-
-        virtual auto get_service(const std::string&) -> service&            = 0;
+        virtual std::string name() const                                    = 0;
 
     };
 
@@ -40,7 +32,7 @@ namespace goblin_engineer {
 
         abstract_service();
 
-        virtual ~abstract_service()                                         = default;
+        virtual ~abstract_service();
 
         static constexpr bool managed = false;
 
@@ -64,15 +56,15 @@ namespace goblin_engineer {
             public abstract_service {
             static constexpr bool managed = true;
 
-        virtual ~abstract_service_managed()                                 = default;
+        virtual ~abstract_service_managed();
 
         auto unpack() -> abstract_actor*;
 
         auto pack(actor_zeta::environment::group&&) -> void;
 
-        void join(service & s);
+        void join(service & ) override;
 
-        bool send(msg&&);
+        bool send(message&&) override;
 
         auto group() -> actor_zeta::environment::group&;
 
@@ -85,21 +77,11 @@ namespace goblin_engineer {
     struct abstract_service_unmanaged:
             public abstract_service {
 
-        virtual ~abstract_service_unmanaged()                               = default;
+        virtual ~abstract_service_unmanaged();
 
-        void input(service &s);
+        virtual bool send(message&&) override ;
 
-        void output(service &s);
-
-        auto input() const -> const std::string&;
-
-        auto output() const -> const std::string&;
-
-        virtual bool send(msg&&);
-
-        virtual void join(service &s);
-
-        auto get_service(const std::string&) -> service&;
+        virtual void join(service &s) override ;
 
     protected:
 
@@ -108,8 +90,6 @@ namespace goblin_engineer {
             method_table.emplace(name,std::forward<F>(f));
         }
 
-        std::string input_;
-        std::string output_;
         std::unordered_map<std::string,method> method_table;
         std::unordered_map<std::string,service> services;
     };

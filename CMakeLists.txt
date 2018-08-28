@@ -70,6 +70,7 @@ list(APPEND ${project}_source
         source/context.cpp
         source/dynamic.cpp
         source/dynamic_environment.cpp
+        source/message.cpp
         source/plugin.cpp
         source/service.cpp
 )

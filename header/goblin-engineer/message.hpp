@@ -10,14 +10,20 @@ namespace goblin_engineer {
 
     using virtual_args = std::vector<boost::any>;
 
-    struct msg final {
-        msg(const std::string &method, const std::vector<boost::any> &args) : method(method), args(args) {}
+    struct message final {
+        message(
+                const std::string &sender,
+                const std::string &method,
+                const virtual_args &args
+        );
+        ~message();
 
+        std::string    sender;
         std::string    method;
         virtual_args   args;
         virtual_result result;
     };
 
-    using method = std::function<void(msg&&)>;
+    using method = std::function<void(message&&)>;
 
 }
