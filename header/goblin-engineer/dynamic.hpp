@@ -239,8 +239,7 @@ namespace goblin_engineer {
             try {
                 return boost::get<T>(m_value);
             } catch (const boost::bad_get &e) {
-                ///"failed to get node value"
-                throw std::system_error();
+                throw std::out_of_range("failed to get node valu");
             }
         }
 

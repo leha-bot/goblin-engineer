@@ -16,7 +16,7 @@ goblin_engineer::dynamic_config &dynamic_config::object_t::at(const std::string 
         msg.append("dynamic_config: key ");
         msg.append(key);
         msg.append(" not found");
-        throw std::system_error();
+        throw std::out_of_range(msg);
     }
     return it->second;
 }
@@ -30,7 +30,7 @@ dynamic_config::object_t::at(const std::string &key) const {
         msg.append("dynamic_config: key ");
         msg.append(key);
         msg.append(" not found");
-        throw std::system_error();
+        throw std::out_of_range(msg);
     }
     return it->second;
 }
