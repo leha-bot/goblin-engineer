@@ -36,19 +36,19 @@ namespace goblin_engineer {
 
         auto add_service(abstract_service_managed*) -> service&;
 
-        auto  config() const -> dynamic_config&;
+        auto  config() const -> dynamic_config& override;
 
-        int start() override ;
+        auto start() -> int override ;
 
-        actor_zeta::executor::abstract_coordinator & manager_execution_device() override ;
+        auto  manager_execution_device() -> actor_zeta::executor::abstract_coordinator & override ;
 
-        actor_zeta::environment::cooperation & manager_group() override ;
+        auto  manager_group() -> actor_zeta::environment::cooperation & override ;
 
-        context_t *context();
+        auto context() -> context_t *;
 
-        boost::asio::io_service& main_loop() const override;
+        auto  main_loop() const -> boost::asio::io_service& override;
 
-        boost::thread_group& background() const override;
+        auto  background() const -> boost::thread_group& override;
 
         struct impl;
 
