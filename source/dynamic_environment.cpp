@@ -48,8 +48,7 @@ namespace goblin_engineer {
         auto add_service(abstract_service_managed *service_ptr) -> service & {
             auto g = cooperation_.created_group(service_ptr->unpack());
             service_ptr->pack(std::move(g));
-            //return service(service_ptr);
-
+            return service(service_ptr);
         }
 
         auto add_service(abstract_service_unmanaged *unmanaged_service) -> service & {
