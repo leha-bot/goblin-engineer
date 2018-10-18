@@ -55,24 +55,21 @@ list(APPEND ${project}_header
         header/goblin-engineer/constructors.hpp
         header/goblin-engineer/context.hpp
         header/goblin-engineer/converters.hpp
+        header/goblin-engineer/data_provider.hpp
         header/goblin-engineer/dynamic.hpp
         header/goblin-engineer/dynamic_environment.hpp
         header/goblin-engineer/forward.hpp
-        header/goblin-engineer/message.hpp
         header/goblin-engineer/metadata.hpp
         header/goblin-engineer/object.hpp
         header/goblin-engineer/plugin.hpp
-        header/goblin-engineer/service.hpp
 )
 
 list(APPEND ${project}_source
         source/abstract_service.cpp
-        source/context.cpp
+        source/data_provider.cpp
         source/dynamic.cpp
         source/dynamic_environment.cpp
-        source/message.cpp
         source/plugin.cpp
-        source/service.cpp
 )
 
 add_library(

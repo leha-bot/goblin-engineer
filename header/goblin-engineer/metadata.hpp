@@ -11,10 +11,4 @@ namespace goblin_engineer {
         std::size_t minor;
         std::size_t patch_level;
     };
-
-
-    struct metadata_service {
-        std::string name;
-    };
-
 }

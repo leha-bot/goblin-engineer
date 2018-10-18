@@ -2,6 +2,7 @@
 #include "goblin-engineer/plugin.hpp"
 #include "goblin-engineer/abstract_plugin.hpp"
 #include "goblin-engineer/metadata.hpp"
+
 namespace goblin_engineer {
 
     inline std::string name(abstract_plugin* ptr){

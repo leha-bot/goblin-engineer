@@ -1,16 +1,16 @@
 #pragma once
 
-#include <goblin-engineer/forward.hpp>
-#include <goblin-engineer/context.hpp>
-#include <goblin-engineer/configuration.hpp>
-#include <actor-zeta/environment/environment.hpp>
+#include <actor-zeta/actor/actor_address.hpp>
 
+#include <goblin-engineer/forward.hpp>
+#include <goblin-engineer/configuration.hpp>
+#include <goblin-engineer/context.hpp>
 
 namespace goblin_engineer {
 
     class dynamic_environment final :
             public context_t,
-            public actor_zeta::environment::abstract_environment {
+            public abstract_environment {
     public:
 
         dynamic_environment(configuration&&);
@@ -20,6 +20,11 @@ namespace goblin_engineer {
         template <typename SERVICE,typename ...Args>
         auto add_service(Args &&...args) -> service& {
             return add_service(new SERVICE(static_cast<context_t*>(this),std::forward<Args>(args)...));
+        }
+
+        template<typename DataProvider,typename ...Args>
+        auto add_data_provider(actor_zeta::actor::actor_address address,Args &&...args) -> data_provider& {
+            return add_data_provider(new DataProvider(static_cast<context_t*>(this),std::move(address),std::forward<Args>(args)...));
         }
 
         auto add_plugin(abstract_plugin *) -> void;
@@ -32,19 +37,21 @@ namespace goblin_engineer {
 
     private:
 
-        auto add_service(abstract_service_unmanaged*) -> service&;
+        auto env() -> actor_zeta::environment::abstract_environment *;
 
-        auto add_service(abstract_service_managed*) -> service&;
+        auto add_service(abstract_service*) ->  service &;
 
-        auto  config() const -> dynamic_config&;
+        auto add_data_provider(data_provider*)-> data_provider&;
+
+        auto  config()  const -> dynamic_config& override;
 
         int start() override ;
 
-        actor_zeta::executor::abstract_coordinator & manager_execution_device() override ;
+        auto manager_execution_device() -> actor_zeta::executor::abstract_coordinator & override ;
 
-        actor_zeta::environment::cooperation & manager_group() override ;
+        auto manager_group() -> actor_zeta::environment::cooperation & override ;
 
-        context_t *context();
+        auto context() -> context_t *;
 
         boost::asio::io_service& main_loop() const override;
 

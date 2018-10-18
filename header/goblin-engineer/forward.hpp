@@ -1,10 +1,20 @@
 #pragma once
 
+#include <actor-zeta/environment/environment.hpp>
+#include <actor-zeta/environment/group.hpp>
+#include <actor-zeta/messaging/message.hpp>
+
 namespace goblin_engineer {
+
+    using abstract_environment = actor_zeta::environment::abstract_environment;
+
+    using service = actor_zeta::environment::group;
+
+    using message = actor_zeta::messaging::message;
 
     struct context_t;
 
-    class service;
+    class dynamic_environment;
 
     class plugin;
 
@@ -12,13 +22,9 @@ namespace goblin_engineer {
 
     struct abstract_service;
 
-    struct abstract_service_unmanaged;
-
-    struct abstract_service_managed;
+    struct data_provider;
 
     struct metadata_plugin;
-
-    struct metadata_service;
 
     enum class service_state : unsigned char {
         initialized,         ///< the service has initlaized any state required but is idle

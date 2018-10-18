@@ -1,14 +1,18 @@
 #pragma once
 
-#include <goblin-engineer/forward.hpp>
-#include <goblin-engineer/dynamic.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+
+#include <goblin-engineer/forward.hpp>
 #include <goblin-engineer/dynamic.hpp>
+
+#include <actor-zeta/environment/abstract_environment.hpp>
 
 namespace goblin_engineer {
 
     struct context_t {
+
+        virtual auto env() -> actor_zeta::environment::abstract_environment * = 0;
 
         virtual auto  config() const -> dynamic_config&    = 0;
 
@@ -20,36 +24,4 @@ namespace goblin_engineer {
 
     };
 
-    // semantics smart ptr
-    class context final {
-    public:
-        context() = default;
-
-        context(const context &) = default;
-
-        context &operator=(const context &) = default;
-
-        context(context &&) = default;
-
-        context &operator=(context &&) = default;
-
-        context(context_t *);
-
-        ~context();
-
-        void reset(context_t *) noexcept;
-
-        auto operator->() const noexcept -> context_t *;
-
-        auto operator*() const noexcept -> context_t &;
-
-        auto operator->() noexcept -> context_t *;
-
-        auto operator*() noexcept -> context_t &;
-
-        explicit operator bool();
-
-    private:
-        std::unique_ptr<context_t> ptr_;
-    };
 }

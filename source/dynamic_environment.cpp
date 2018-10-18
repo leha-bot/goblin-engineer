@@ -1,25 +1,19 @@
 #include <goblin-engineer/dynamic_environment.hpp>
 
+#include <forward_list>
+
 #include <actor-zeta/environment/cooperation.hpp>
 #include <actor-zeta/executor/coordinator.hpp>
 #include <actor-zeta/executor/policy/work_sharing.hpp>
 
 
 #include <goblin-engineer/metadata.hpp>
-#include <goblin-engineer/service.hpp>
-#include <goblin-engineer/plugin.hpp>
 #include <goblin-engineer/abstract_service.hpp>
+#include <goblin-engineer/plugin.hpp>
+#include <goblin-engineer/data_provider.hpp>
+
 
 namespace goblin_engineer {
-
-    inline std::string name_service(abstract_service *ptr) {
-        std::string tmp;
-        std::unique_ptr<metadata_service> metadata(new metadata_service);
-        ptr->metadata(metadata.get());
-        tmp = metadata->name;
-        return tmp;
-    }
-
 
     inline std::string name_plugin(abstract_plugin *ptr) {
         std::string tmp;
@@ -27,6 +21,27 @@ namespace goblin_engineer {
         ptr->metadata(metadata.get());
         tmp = metadata->name;
         return tmp;
+    }
+
+    void startup(data_provider&provider,context_t *context) {
+        std::cerr << "startup service: " << provider.name() << std::endl;
+        ///if (state() == service_state::initialized) {
+        ///    state(service_state::started);
+        /**    return*/ provider.startup(context);
+        ///} else {
+        ///    std::cerr << "error startup  service: " << provider.name() << std::endl;
+        ///}
+    }
+
+    void shutdown(data_provider&provider ) {
+        std::cerr << "shutdown service:" << provider.name() << std::endl;
+        ///if (state() == service_state::started) {
+        ///    state(service_state::stopped);
+        /**    return*/ provider.shutdown();
+        ///} else {
+        ///    std::cerr << "error shutdown service:" << provider.name() << std::endl;
+        ///}
+
     }
 
     struct dynamic_environment::impl final {
@@ -43,18 +58,6 @@ namespace goblin_engineer {
             storage_plugin.emplace_back(plugin_ptr);
             mapper.emplace(name_plugin(plugin_ptr), size);
             state_plugin.emplace_back(size);
-        }
-
-        auto add_service(abstract_service_managed *service_ptr) -> service & {
-            auto g = cooperation_.created_group(service_ptr->unpack());
-            service_ptr->pack(std::move(g));
-            //return service(service_ptr);
-
-        }
-
-        auto add_service(abstract_service_unmanaged *unmanaged_service) -> service & {
-            auto result = unmanaged_services.emplace(name_service(unmanaged_service), unmanaged_service);
-            return result.first->second;
         }
 
         auto get_plugin(std::size_t index) -> plugin & {
@@ -74,15 +77,15 @@ namespace goblin_engineer {
             return state_plugin;
         }
 
-        boost::asio::io_service *main_loop() {
+        auto main_loop() -> boost::asio::io_service * {
             return io_serv.get();
         }
 
-        boost::thread_group &background() const {
+        auto background() const -> boost::thread_group & {
             return *background_;
         }
 
-        dynamic_config &configuration() {
+        auto configuration() -> dynamic_config & {
             return configuration_.dynamic_configuration;
         }
 
@@ -91,12 +94,9 @@ namespace goblin_engineer {
         ///Config
 
         actor_zeta::environment::cooperation cooperation_;
-        actor_zeta::executor::abstract_coordinator *coordinator_;
+        std::unique_ptr<actor_zeta::executor::abstract_coordinator>coordinator_;
 
-
-        ///service
-        std::unordered_map<std::string, service> unmanaged_services;
-        ///service
+        std::unordered_map<std::string,std::unique_ptr<data_provider> >  data_provider_;
 
     private:
 
@@ -113,8 +113,8 @@ namespace goblin_engineer {
 
     void dynamic_environment::shutdown() {
 
-        for (auto &i:pimpl->unmanaged_services) {
-            i.second.shutdown();
+        for (auto &i:pimpl->data_provider_) {
+            goblin_engineer::shutdown((*i.second.get()));
         }
 
         for (const auto &i:pimpl->current_state()) {
@@ -129,8 +129,8 @@ namespace goblin_engineer {
 
     void dynamic_environment::startup() {
 
-        for (auto &i:pimpl->unmanaged_services) {
-            i.second.startup(static_cast<context_t*>(this));
+        for (auto &i:pimpl->data_provider_) {
+            goblin_engineer::startup(*(i.second.get()),static_cast<context_t*>(this));
         }
 
         for (const auto &i:pimpl->current_state()) {
@@ -139,7 +139,7 @@ namespace goblin_engineer {
             }
         }
 
-        pimpl->main_loop()->run();
+        start();
 
         shutdown();
     }
@@ -190,7 +190,7 @@ namespace goblin_engineer {
 
     int dynamic_environment::start() {
         manager_execution_device().start();
-        return 0;
+        return pimpl->main_loop()->run();
     }
 
     actor_zeta::executor::abstract_coordinator &dynamic_environment::manager_execution_device() {
@@ -205,16 +205,22 @@ namespace goblin_engineer {
         return pimpl->add_plugin(plugin_ptr);
     }
 
-    auto dynamic_environment::add_service(abstract_service_unmanaged *service_ptr) -> service & {
-        return pimpl->add_service(service_ptr);
-    }
-
-    auto dynamic_environment::add_service(abstract_service_managed *service_ptr) -> service & {
-        return pimpl->add_service(service_ptr);
+    auto dynamic_environment::add_service(abstract_service *service_ptr) -> service & {
+        return manager_group().created_group(service_ptr);
     }
 
     auto dynamic_environment::config() const -> dynamic_config & {
         return pimpl->configuration();
+    }
+
+    auto dynamic_environment::env() -> actor_zeta::environment::abstract_environment  * {
+        return this;
+    }
+
+    auto dynamic_environment::add_data_provider(data_provider *ptr ) -> data_provider & {
+       auto name_  =  ptr->name();
+       pimpl->data_provider_.emplace(name_,ptr);
+       return *(pimpl->data_provider_.at(name_).get());
     }
 
 }
