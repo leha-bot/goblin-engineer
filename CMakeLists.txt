@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_CXX_STANDARD 11)
 
 set(project goblin-engineer)
 
@@ -18,9 +18,20 @@ endif()
 
 #############################################################################################
 #ACTOR-ZETA
-add_subdirectory(dependency/actor-zeta)
-include_directories(SYSTEM dependency/actor-zeta/libactor_zeta_core/)
-include_directories(SYSTEM dependency/actor-zeta/libactor_zeta_io)
+
+option(STANDALONE-ACTOR-ZETA ""  OFF)
+
+if(STANDALONE-ACTOR-ZETA)
+    set(path_actor_zeta ${actor-zeta-dir})
+else()
+    add_subdirectory(dependency/actor-zeta)
+    set(path_actor_zeta "dependency/actor-zeta")
+endif()
+
+include_directories(SYSTEM ${path_actor_zeta}/core)
+include_directories(SYSTEM ${path_actor_zeta}/io)
+
+#ACTOR-ZETA
 #############################################################################################
 
 #############################################################################################
@@ -47,7 +58,7 @@ include_directories (SYSTEM ${Boost_INCLUDE_DIR})
 
 include_directories(header)
 
-list(APPEND ${project}_header
+list(APPEND ${PROJECT_NAME}_header
 
         header/goblin-engineer/abstract_plugin.hpp
         header/goblin-engineer/abstract_service.hpp
@@ -64,7 +75,7 @@ list(APPEND ${project}_header
         header/goblin-engineer/plugin.hpp
 )
 
-list(APPEND ${project}_source
+list(APPEND ${PROJECT_NAME}_source
         source/abstract_service.cpp
         source/data_provider.cpp
         source/dynamic.cpp
@@ -73,22 +84,22 @@ list(APPEND ${project}_source
 )
 
 add_library(
-        ${project}
-        ${${project}_header}
-        ${${project}_source}
+        ${PROJECT_NAME}
+        ${${PROJECT_NAME}_header}
+        ${${PROJECT_NAME}_source}
 )
 
 target_link_libraries (
-        ${project} PUBLIC
+        ${PROJECT_NAME} PUBLIC
         ${Boost_LIBRARIES}
         actor-zeta-core
         actor-zeta-io
 )
 
 target_include_directories(
-        ${project}
+        ${PROJECT_NAME}
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/header
-        dependency/actor-zeta/core
-        dependency/actor-zeta/io
+        ${path_actor_zeta}/core
+        ${path_actor_zeta}/io
 )
