@@ -8,7 +8,6 @@
 #include <actor-zeta/executor/policy/work_sharing.hpp>
 
 #include <goblin-engineer/dynamic.hpp>
-#include <goblin-engineer/metadata.hpp>
 #include <goblin-engineer/abstract_service.hpp>
 #include <goblin-engineer/plugin.hpp>
 #include <goblin-engineer/data_provider.hpp>
@@ -18,8 +17,8 @@ namespace goblin_engineer {
 
     inline std::string name_plugin(abstract_plugin *ptr) {
         std::string tmp;
-        std::unique_ptr<metadata_plugin> metadata(new metadata_plugin);
-        ptr->metadata(metadata.get());
+        std::unique_ptr<meta_data_plugin> metadata(new meta_data_plugin);
+        ptr->meta_data(metadata.get());
         tmp = metadata->name;
         return tmp;
     }

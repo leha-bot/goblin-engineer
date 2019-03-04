@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set(project goblin-engineer)
 
@@ -36,29 +36,50 @@ include_directories(SYSTEM ${path_actor_zeta}/io)
 
 #############################################################################################
 #BOOST
-set(BOOST_COMPONENTS)
 
-list(APPEND BOOST_COMPONENTS
-        thread
-        date_time
-        system
-        filesystem
-        timer
-        chrono
-        program_options
-        unit_test_framework
-        locale
-        )
+option(CONAN ""  OFF)
 
+if(CONAN)
 
-find_package (Boost 1.67 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
-include_directories (SYSTEM ${Boost_INCLUDE_DIR})
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.13/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
+    endif()
+
+    include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+    conan_cmake_run(
+            CONANFILE conanfile.txt
+            BASIC_SETUP
+            BUILD missing
+    )
+
+else()
+
+    set(BOOST_COMPONENTS
+            thread
+            date_time
+            system
+            filesystem
+            timer
+            chrono
+            program_options
+            unit_test_framework
+            locale
+    )
+
+    find_package (Boost 1.66 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
+
+endif()
+
+include_directories (SYSTEM ${Boost_INCLUDE_DIRS})
+
 #############################################################################################
 
 
 include_directories(header)
 
-list(APPEND ${PROJECT_NAME}_header
+set(${PROJECT_NAME}_header
 
         header/goblin-engineer/abstract_plugin.hpp
         header/goblin-engineer/abstract_service.hpp
@@ -70,12 +91,12 @@ list(APPEND ${PROJECT_NAME}_header
         header/goblin-engineer/dynamic.hpp
         header/goblin-engineer/dynamic_environment.hpp
         header/goblin-engineer/forward.hpp
-        header/goblin-engineer/metadata.hpp
         header/goblin-engineer/object.hpp
         header/goblin-engineer/plugin.hpp
-        )
+)
 
-list(APPEND ${PROJECT_NAME}_source
+set(${PROJECT_NAME}_source
+        source/abstract_plugin.cpp
         source/data_provider.cpp
         source/dynamic.cpp
         source/dynamic_environment.cpp
@@ -102,3 +123,9 @@ target_include_directories(
         ${path_actor_zeta}/core
         ${path_actor_zeta}/io
 )
+
+option(EXAMPLE ""  OFF)
+
+if(EXAMPLE)
+    add_subdirectory(example)
+endif()

@@ -1,14 +1,13 @@
 #include <iostream>
 #include "goblin-engineer/plugin.hpp"
 #include "goblin-engineer/abstract_plugin.hpp"
-#include "goblin-engineer/metadata.hpp"
 
 namespace goblin_engineer {
 
     inline std::string name(abstract_plugin* ptr){
         std::string tmp;
-        std::unique_ptr<metadata_plugin> metadata(new metadata_plugin);
-        ptr->metadata(metadata.get());
+        std::unique_ptr<meta_data_plugin> metadata(new meta_data_plugin);
+        ptr->meta_data(metadata.get());
         tmp = metadata->name;
         return tmp;
     }
@@ -57,8 +56,8 @@ namespace goblin_engineer {
 
     }
 
-    void plugin::metadata(metadata_plugin* metadata) const {
-        self()->metadata(metadata);
+    void plugin::metadata(meta_data_plugin* metadata) const {
+        self()->meta_data(metadata);
     }
 
     auto plugin::self() -> abstract_plugin * {

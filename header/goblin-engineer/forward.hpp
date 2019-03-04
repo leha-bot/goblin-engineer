@@ -26,7 +26,7 @@ namespace goblin_engineer {
 
     struct data_provider;
 
-    struct metadata_plugin;
+    struct meta_data_plugin;
 
     enum class service_state : unsigned char {
         initialized,         ///< the service has initlaized any state required but is idle

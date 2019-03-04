@@ -24,7 +24,7 @@ namespace goblin_engineer {
 
         void shutdown();
 
-        void  metadata(metadata_plugin*) const;
+        void  metadata(meta_data_plugin*) const;
 
         void state(plugin_state);
 
