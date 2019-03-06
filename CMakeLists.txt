@@ -83,7 +83,6 @@ set(${PROJECT_NAME}_header
 
         header/goblin-engineer/abstract_plugin.hpp
         header/goblin-engineer/abstract_service.hpp
-        header/goblin-engineer/configuration.hpp
         header/goblin-engineer/dynamic/constructors.hpp
         header/goblin-engineer/context.hpp
         header/goblin-engineer/dynamic/converters.hpp

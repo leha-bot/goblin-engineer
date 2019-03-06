@@ -15,14 +15,6 @@
 
 namespace goblin_engineer {
 
-    inline std::string name_plugin(abstract_plugin *ptr) {
-        std::string tmp;
-        auto metadata = std::make_unique<meta_data_plugin>();
-        ptr->meta_data(metadata.get());
-        tmp = metadata->name;
-        return tmp;
-    }
-
     struct dynamic_environment::impl final {
         impl() :
                 coordinator_(new actor_zeta::executor::coordinator<actor_zeta::executor::work_sharing>(1, 1000)),
@@ -41,12 +33,10 @@ namespace goblin_engineer {
         }
 
         auto configuration() -> dynamic_config & {
-            return configuration_.dynamic_configuration;
+            return configuration_;
         }
 
-        ///Config
-        goblin_engineer::configuration configuration_;
-        ///Config
+        dynamic_config configuration_;
 
         actor_zeta::environment::cooperation cooperation_;
         std::unique_ptr<actor_zeta::executor::abstract_coordinator>coordinator_;
@@ -87,7 +77,7 @@ namespace goblin_engineer {
 
     }
 
-    dynamic_environment::dynamic_environment(configuration &&f) : pimpl(new impl) {
+    dynamic_environment::dynamic_environment(dynamic_config &&f) : pimpl(new impl) {
         pimpl->configuration_ = std::move(f);
 
         std::shared_ptr<boost::asio::signal_set> sigint_set(new boost::asio::signal_set(main_loop(), SIGINT, SIGTERM));
@@ -133,7 +123,15 @@ namespace goblin_engineer {
     }
 
     auto dynamic_environment::add_plugin(abstract_plugin *plugin_ptr) -> void {
-        ///return pimpl->add_plugin(plugin_ptr);
+        {
+
+            std::unique_ptr<abstract_plugin>_(plugin_ptr);
+            auto metadata = std::make_unique<meta_data_plugin>();
+            plugin_ptr->meta_data(metadata.get());
+            plugin_ptr->initialization(config(),env());
+            plugin_ptr->startup(context());
+
+        }
     }
 
     auto dynamic_environment::add_service(abstract_service *service_ptr) -> service & {

@@ -10,7 +10,7 @@ namespace goblin_engineer {
 
     struct data_provider : public local_actor {
 
-        data_provider(actor_zeta::environment::abstract_environment *,  const std::string &);
+        data_provider(actor_zeta::environment::abstract_environment *, const std::string &);
 
         virtual ~data_provider() override = default;
 
