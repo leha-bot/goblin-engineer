@@ -1,16 +1,21 @@
 #pragma once
 
-
 #include <goblin-engineer/abstract_plugin.hpp>
 
-PLUGIN_API class  test_plugin final : public goblin_engineer::abstract_plugin {
-    void initialization(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    void startup(goblin_engineer::context_t *);
+class BOOST_SYMBOL_VISIBLE test_plugin final : public goblin_engineer::abstract_plugin {
+    void initialization() override;
 
-    void shutdown(void);
+    void startup(goblin_engineer::context_t *) override;
 
-    void metadata(goblin_engineer::metadata_plugin*) const;
+    void meta_data(goblin_engineer::meta_data_plugin*) const override;
 
-    ~test_plugin()= default;
+    ~test_plugin() override = default;
 };
+
+#ifdef __cplusplus
+}
+#endif

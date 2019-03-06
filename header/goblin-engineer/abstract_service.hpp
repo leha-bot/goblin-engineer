@@ -14,13 +14,10 @@ namespace goblin_engineer {
 
         virtual ~abstract_service() = default;
 
-        static constexpr bool in_plugin = false;
-
         virtual void startup(goblin_engineer::context_t *) = 0;
 
         virtual void shutdown() = 0;
 
-        ////service_state state_;
     };
 
 }

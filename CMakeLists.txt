@@ -84,15 +84,14 @@ set(${PROJECT_NAME}_header
         header/goblin-engineer/abstract_plugin.hpp
         header/goblin-engineer/abstract_service.hpp
         header/goblin-engineer/configuration.hpp
-        header/goblin-engineer/constructors.hpp
+        header/goblin-engineer/dynamic/constructors.hpp
         header/goblin-engineer/context.hpp
-        header/goblin-engineer/converters.hpp
+        header/goblin-engineer/dynamic/converters.hpp
         header/goblin-engineer/data_provider.hpp
-        header/goblin-engineer/dynamic.hpp
+        header/goblin-engineer/dynamic/dynamic.hpp
         header/goblin-engineer/dynamic_environment.hpp
         header/goblin-engineer/forward.hpp
-        header/goblin-engineer/object.hpp
-        header/goblin-engineer/plugin.hpp
+        header/goblin-engineer/dynamic/object.hpp
 )
 
 set(${PROJECT_NAME}_source
@@ -100,7 +99,6 @@ set(${PROJECT_NAME}_source
         source/data_provider.cpp
         source/dynamic.cpp
         source/dynamic_environment.cpp
-        source/plugin.cpp
 )
 
 add_library(

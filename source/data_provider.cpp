@@ -13,7 +13,7 @@ namespace goblin_engineer {
 
     }
 
-    data_provider::data_provider(actor_zeta::environment::abstract_environment *env,  const std::string &name):actor_zeta::actor::local_actor(env,name){
+    data_provider::data_provider(actor_zeta::environment::abstract_environment *env,  const std::string &name):local_actor(env,name){
 
     }
 

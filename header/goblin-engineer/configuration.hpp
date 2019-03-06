@@ -3,7 +3,7 @@
 #include <unordered_set>
 
 #include <boost/filesystem.hpp>
-#include <goblin-engineer/dynamic.hpp>
+#include <goblin-engineer/dynamic/dynamic.hpp>
 
 namespace goblin_engineer {
 

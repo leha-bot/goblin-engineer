@@ -62,9 +62,5 @@ namespace goblin_engineer {
         std::unique_ptr<impl> pimpl;
     };
 
-    inline auto add_plugin(dynamic_environment &app, abstract_plugin* plugin ) -> void {
-        app.add_plugin(plugin);
-    }
-
 }
 

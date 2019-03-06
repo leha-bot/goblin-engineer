@@ -1,4 +1,4 @@
-#include <goblin-engineer/dynamic.hpp>
+#include <goblin-engineer/dynamic/dynamic.hpp>
 
 
 using namespace goblin_engineer;

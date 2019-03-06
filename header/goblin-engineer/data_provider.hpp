@@ -6,7 +6,9 @@
 
 namespace goblin_engineer {
 
-    struct data_provider : public actor_zeta::actor::local_actor {
+    using actor_zeta::actor::local_actor;
+
+    struct data_provider : public local_actor {
 
         data_provider(actor_zeta::environment::abstract_environment *,  const std::string &);
 

@@ -18,8 +18,6 @@ namespace goblin_engineer {
 
     class dynamic_config;
 
-    class plugin;
-
     struct abstract_plugin;
 
     struct abstract_service;
