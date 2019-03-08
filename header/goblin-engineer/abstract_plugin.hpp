@@ -2,16 +2,12 @@
 #include <cstdint>
 
 #include <boost/dll.hpp>
-#include <boost/filesystem.hpp>
+
 
 #include <goblin-engineer/context.hpp>
 #include <actor-zeta/ref_counted.hpp>
 
 namespace goblin_engineer {
-
-#ifdef __cplusplus
-    extern "C" {
-#endif
 
     struct BOOST_SYMBOL_VISIBLE meta_data_plugin final {
         std::string name;
@@ -23,7 +19,7 @@ namespace goblin_engineer {
 
     ///class factory
 
-    struct BOOST_SYMBOL_VISIBLE abstract_plugin : public actor_zeta::ref_counted {
+    struct BOOST_SYMBOL_VISIBLE abstract_plugin {
 
         virtual void initialization(
                 goblin_engineer::dynamic_config &,
@@ -37,11 +33,10 @@ namespace goblin_engineer {
         virtual ~abstract_plugin() = default;
     };
 
-#ifdef __cplusplus
-    }
-#endif
 
-    auto get_plugin(boost::filesystem::path path, const char *func_name) -> actor_zeta::intrusive_ptr<abstract_plugin>;
+    auto get_plugin(boost::filesystem::path path, const char *func_name) -> abstract_plugin*;
+
+    auto load_plugin(boost::filesystem::path) -> abstract_plugin*;
 
 }
 

@@ -1,14 +1,22 @@
 #include "test_plugin.hpp"
 
-void test_plugin::initialization(goblin_engineer::dynamic_config &,actor_zeta::environment::abstract_environment *) {
+void example_plugin_service::initialization(goblin_engineer::dynamic_config &,actor_zeta::environment::abstract_environment * env) {
+    prototype = std::make_unique<example_plugin_actor>(env);
+}
+
+void example_plugin_service::startup(goblin_engineer::context_t *) {
 
 }
 
-void test_plugin::startup(goblin_engineer::context_t *) {
+
+void example_plugin_service::meta_data(goblin_engineer::meta_data_plugin *) const {
 
 }
 
+extern  "C" {
 
-void test_plugin::meta_data(goblin_engineer::meta_data_plugin *) const {
+    auto load_plugin() -> goblin_engineer::abstract_plugin * {
+        return new example_plugin_service;
+    }
 
 }

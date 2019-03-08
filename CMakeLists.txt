@@ -16,6 +16,8 @@ else()
     PROJECT(${project} VERSION "${CMAKE_PROJECT_VERSION}" LANGUAGES CXX)
 endif()
 
+find_package( Threads )
+
 #############################################################################################
 #ACTOR-ZETA
 
@@ -52,6 +54,7 @@ if(CONAN)
             CONANFILE conanfile.txt
             BASIC_SETUP
             BUILD missing
+            NO_OUTPUT_DIRS
     )
 
 else()
@@ -108,6 +111,7 @@ add_library(
 
 target_link_libraries (
         ${PROJECT_NAME} PUBLIC
+        ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_LIBRARIES}
         actor-zeta-core
         actor-zeta-io

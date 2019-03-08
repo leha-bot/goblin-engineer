@@ -16,16 +16,7 @@ else()
     PROJECT(${project} VERSION "${CMAKE_PROJECT_VERSION}" LANGUAGES CXX)
 endif()
 
-
-#############################################################################################
-#ACTOR-ZETA
-
-#include_directories(SYSTEM ${path_actor_zeta}/core)
-#include_directories(SYSTEM ${path_actor_zeta}/io)
-
-#ACTOR-ZETA
-#############################################################################################
-
+find_package( Threads )
 
 set(${PROJECT_NAME}_header
 
@@ -35,11 +26,7 @@ set(${PROJECT_NAME}_source
         main.cpp
 )
 
-add_executable(
-        ${PROJECT_NAME}
-        ${${PROJECT_NAME}_header}
-        ${${PROJECT_NAME}_source}
-)
+#########################################
 
 add_library(
         ProgPlugin SHARED
@@ -48,13 +35,41 @@ add_library(
 )
 
 target_link_libraries (
+        ProgPlugin
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${CONAN_LIBS}
+        ${Boost_LIBRARIES}
+        goblin-engineer
+        actor-zeta-core
+        actor-zeta-io
+
+)
+
+target_include_directories(
+        ProgPlugin
+        PUBLIC
+)
+
+#########################################
+
+add_executable(
         ${PROJECT_NAME}
+        ${${PROJECT_NAME}_header}
+        ${${PROJECT_NAME}_source}
+)
+
+target_link_libraries (
+        ${PROJECT_NAME}
+        ${CMAKE_THREAD_LIBS_INIT}
+        dl
+        ${CONAN_LIBS}
+        ${Boost_LIBRARIES}
+        goblin-engineer
+        actor-zeta-core
+        actor-zeta-io
 )
 
 target_include_directories(
         ${PROJECT_NAME}
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/header
-        ${path_actor_zeta}/core
-        ${path_actor_zeta}/io
 )
