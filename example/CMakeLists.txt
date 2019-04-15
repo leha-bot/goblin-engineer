@@ -40,8 +40,7 @@ target_link_libraries (
         ${CONAN_LIBS}
         ${Boost_LIBRARIES}
         goblin-engineer
-        actor-zeta-core
-        actor-zeta-io
+        actor-zeta
 
 )
 
@@ -65,8 +64,7 @@ target_link_libraries (
         ${CONAN_LIBS}
         ${Boost_LIBRARIES}
         goblin-engineer
-        actor-zeta-core
-        actor-zeta-io
+        actor-zeta
 )
 
 target_include_directories(

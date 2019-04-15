@@ -113,16 +113,14 @@ target_link_libraries (
         ${PROJECT_NAME} PUBLIC
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_LIBRARIES}
-        actor-zeta-core
-        actor-zeta-io
+        actor-zeta
 )
 
 target_include_directories(
         ${PROJECT_NAME}
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/header
-        ${path_actor_zeta}/core
-        ${path_actor_zeta}/io
+        ${path_actor_zeta}
 )
 
 option(EXAMPLE ""  OFF)

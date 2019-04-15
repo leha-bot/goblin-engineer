@@ -5,7 +5,7 @@
 
 int main() {
 
-    auto* plugin = goblin_engineer::load_plugin("./libProgPlugin.so");
+    auto* plugin = goblin_engineer::load_plugin("libProgPlugin.so");
 
     return 0;
 }

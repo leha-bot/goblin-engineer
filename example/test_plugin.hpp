@@ -4,7 +4,7 @@
 #include <actor-zeta/actor/abstract_actor.hpp>
 #include <actor-zeta/actor/basic_actor.hpp>
 
-class BOOST_SYMBOL_VISIBLE example_plugin_actor final : actor_zeta::actor::basic_async_actor {
+class /*BOOST_SYMBOL_VISIBLE*/ example_plugin_actor final : actor_zeta::actor::basic_async_actor {
 public:
     example_plugin_actor(actor_zeta::environment::abstract_environment* env):basic_actor(env,"logger"){
 
