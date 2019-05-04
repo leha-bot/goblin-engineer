@@ -1,0 +1,90 @@
+os: linux
+dist: xenial
+language: python
+python: "3.7"
+
+cache:
+  - pip
+  - apt
+  - ccache
+
+
+
+
+matrix:
+  include:
+    ##########################################################################
+    # GCC on Linux
+    ##########################################################################
+
+    # GCC 4.9
+    - env: COMPILER=g++-4.9 BUILD_TYPE=Debug
+      addons: &gcc49
+        apt:
+          packages:
+            - g++-4.9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - env: COMPILER=g++-4.9 BUILD_TYPE=Release
+      addons: *gcc49
+
+
+    # GCC 5
+    - env: COMPILER=g++-5 BUILD_TYPE=Debug
+      addons: &gcc5
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - env: COMPILER=g++-5 BUILD_TYPE=Release
+      addons: *gcc5
+
+    # GCC 6
+    - env: COMPILER=g++-6 BUILD_TYPE=Debug
+      addons: &gcc6
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - env: COMPILER=g++-6 BUILD_TYPE=Release
+      addons: *gcc6
+
+    # GCC 7
+    - env: COMPILER=g++-7 BUILD_TYPE=Debug
+      addons: &gcc7
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - env: COMPILER=g++-7 BUILD_TYPE=Release
+      addons: *gcc7
+
+    # GCC 8
+    - env: COMPILER=g++-8 BUILD_TYPE=Debug
+      addons: &gcc8
+        apt:
+          packages:
+            - g++-8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - env: COMPILER=g++-8 BUILD_TYPE=Release
+      addons: *gcc8
+
+install:
+  - pip install conan
+  - conan user
+
+script:
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  - conan install .
+  - mkdir build && cd build
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER=$COMPILER -DCONAN=ON
+  - cmake --build . -- VERBOSE=1
