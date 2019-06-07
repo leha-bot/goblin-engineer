@@ -3,7 +3,6 @@
 #include <actor-zeta/actor/actor_address.hpp>
 
 #include <goblin-engineer/forward.hpp>
-#include <goblin-engineer/configuration.hpp>
 #include <goblin-engineer/context.hpp>
 
 namespace goblin_engineer {
@@ -13,7 +12,7 @@ namespace goblin_engineer {
             public abstract_environment {
     public:
 
-        explicit dynamic_environment(configuration&&);
+        explicit dynamic_environment(dynamic_config &&);
 
         ~dynamic_environment() override;
 

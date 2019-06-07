@@ -12,7 +12,7 @@ namespace goblin_engineer {
         template <std::size_t N>
         abstract_service(actor_zeta::environment::abstract_environment *env,const char(&name)[N]): basic_async_actor(env,name){}
 
-        virtual ~abstract_service() = default;
+        ~abstract_service() override = default;
 
         static constexpr bool in_plugin = false;
 

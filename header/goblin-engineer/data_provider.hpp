@@ -10,7 +10,7 @@ namespace goblin_engineer {
 
         data_provider(actor_zeta::environment::abstract_environment *,  const std::string &);
 
-        virtual ~data_provider() override = default;
+        ~data_provider() override = default;
 
         virtual void startup(goblin_engineer::context_t *) = 0;
 

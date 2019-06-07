@@ -7,7 +7,7 @@
 #include <actor-zeta/executor/coordinator.hpp>
 #include <actor-zeta/executor/policy/work_sharing.hpp>
 
-#include <goblin-engineer/dynamic.hpp>
+#include <goblin-engineer/detail/dynamic.hpp>
 #include <goblin-engineer/metadata.hpp>
 #include <goblin-engineer/abstract_service.hpp>
 #include <goblin-engineer/plugin.hpp>
@@ -87,11 +87,11 @@ namespace goblin_engineer {
         }
 
         auto configuration() -> dynamic_config & {
-            return configuration_.dynamic_configuration;
+            return configuration_;
         }
 
         ///Config
-        goblin_engineer::configuration configuration_;
+        goblin_engineer::dynamic_config  configuration_;
         ///Config
 
         actor_zeta::environment::cooperation cooperation_;
@@ -163,7 +163,7 @@ namespace goblin_engineer {
 
     }
 
-    dynamic_environment::dynamic_environment(configuration &&f) : pimpl(new impl) {
+    dynamic_environment::dynamic_environment(dynamic_config  &&f) : pimpl(new impl) {
         pimpl->configuration_ = std::move(f);
 
         std::shared_ptr<boost::asio::signal_set> sigint_set(new boost::asio::signal_set(main_loop(), SIGINT, SIGTERM));

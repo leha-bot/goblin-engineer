@@ -80,17 +80,18 @@ include_directories (SYSTEM ${Boost_INCLUDE_DIRS})
 include_directories(header)
 
 list(APPEND ${PROJECT_NAME}_header
+        header/goblin-engineer/detail/constructors.hpp
+        header/goblin-engineer/detail/converters.hpp
+        header/goblin-engineer/detail/dynamic.hpp
+        header/goblin-engineer/dynamic.hpp
 
         header/goblin-engineer/abstract_plugin.hpp
         header/goblin-engineer/abstract_service.hpp
-        header/goblin-engineer/configuration.hpp
-        header/goblin-engineer/constructors.hpp
         header/goblin-engineer/context.hpp
-        header/goblin-engineer/converters.hpp
         header/goblin-engineer/data_provider.hpp
-        header/goblin-engineer/dynamic.hpp
         header/goblin-engineer/dynamic_environment.hpp
         header/goblin-engineer/forward.hpp
+        header/goblin-engineer/log.hpp
         header/goblin-engineer/metadata.hpp
         header/goblin-engineer/object.hpp
         header/goblin-engineer/plugin.hpp
@@ -102,6 +103,15 @@ list(APPEND ${PROJECT_NAME}_source
         source/dynamic_environment.cpp
         source/plugin.cpp
 )
+
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
+
+include(cmake/clang_tools.cmake)
 
 add_library(
         ${PROJECT_NAME}

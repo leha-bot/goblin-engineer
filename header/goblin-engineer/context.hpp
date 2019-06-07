@@ -4,7 +4,7 @@
 #include <boost/thread.hpp>
 
 #include <goblin-engineer/forward.hpp>
-#include <goblin-engineer/dynamic.hpp>
+#include <goblin-engineer/detail/dynamic.hpp>
 
 #include <actor-zeta/environment/abstract_environment.hpp>
 
