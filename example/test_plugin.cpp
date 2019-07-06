@@ -13,10 +13,13 @@ void example_plugin_service::meta_data(goblin_engineer::meta_data_plugin *) cons
 
 }
 
-extern  "C" {
+namespace test {
 
     auto load_plugin() -> goblin_engineer::abstract_plugin * {
         return new example_plugin_service;
     }
 
 }
+
+///BOOST_DLL_AUTO_ALIAS()
+BOOST_DLL_ALIAS(test::load_plugin,load_plugin)

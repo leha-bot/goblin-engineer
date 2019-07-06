@@ -13,7 +13,7 @@ public:
     ~example_plugin_actor() = default;
 };
 
-class BOOST_SYMBOL_VISIBLE example_plugin_service final : public goblin_engineer::abstract_plugin {
+class BOOST_SYMBOL_EXPORT example_plugin_service final : public goblin_engineer::abstract_plugin {
 public:
     example_plugin_service() = default;
 
