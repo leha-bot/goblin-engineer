@@ -1,33 +1,27 @@
 #pragma once
 
-#include <actor-zeta/actor/actor_address.hpp>
+#include <boost/asio.hpp>
+#include <boost/thread.hpp>
 
 #include <goblin-engineer/forward.hpp>
-#include <goblin-engineer/configuration.hpp>
-#include <goblin-engineer/context.hpp>
+#include <goblin-engineer/dynamic.hpp>
+#include <actor-zeta/core.hpp>
 
 namespace goblin_engineer {
 
-    class dynamic_environment final :
-            public context_t,
-            public abstract_environment {
+    class dynamic_environment final {
     public:
 
-        explicit dynamic_environment(configuration&&);
+        explicit dynamic_environment(dynamic_config&&);
 
-        ~dynamic_environment() override;
+        ~dynamic_environment();
 
-        template <typename SERVICE,typename ...Args>
-        auto add_service(Args &&...args) -> service& {
-            return add_service(new SERVICE(config(),env(),std::forward<Args>(args)...));
+        template <class Manager,typename ...Args>
+        auto add_manager_service(Args&&...args)-> Manager* {
+            auto * tmp  = new Manager(configuration(), environment(), std::forward<Args>(args)...);
+            storage_.emplace_back(actor_zeta::intrusive_ptr<Manager>(tmp));
+            return tmp;
         }
-
-        template<typename DataProvider,typename ...Args>
-        auto add_data_provider(actor_zeta::actor::actor_address address,Args &&...args) -> data_provider& {
-            return add_data_provider(new DataProvider(config(),env(),std::move(address),std::forward<Args>(args)...));
-        }
-
-        auto add_plugin(abstract_plugin *) -> void;
 
         void initialize();
 
@@ -35,36 +29,24 @@ namespace goblin_engineer {
 
         void shutdown();
 
+        auto executor() -> actor_zeta::executor::abstract_executor & ;
+
+        auto background() const -> boost::thread_group &;
+
     private:
 
-        auto env() -> goblin_engineer::abstract_environment *;
+        auto environment() -> goblin_engineer::dynamic_environment *;
 
-        auto add_service(abstract_service*) ->  service &;
+        auto configuration() -> dynamic_config&;
 
-        auto add_data_provider(data_provider*)-> data_provider&;
+        auto start() -> std::size_t ;
 
-        auto config() const -> dynamic_config& ;
-
-        auto start() -> int override ;
-
-        auto get_executor() -> actor_zeta::executor::abstract_executor & override ;
-
-        auto manager_group() -> actor_zeta::environment::cooperation & override ;
-
-        auto context() -> context_t *;
-
-        auto main_loop() const ->  boost::asio::io_service& override;
-
-        auto background() const -> boost::thread_group& override;
-
-        struct impl;
-
-        std::unique_ptr<impl> pimpl;
+        goblin_engineer::dynamic_config configuration_;
+        std::unique_ptr<actor_zeta::executor::abstract_executor>coordinator_;
+        std::unique_ptr<boost::asio::io_context> io_context_;
+        std::unique_ptr<boost::thread_group> background_;
+        std::vector<actor_zeta::intrusive_ptr<actor_zeta::supervisor>> storage_;
     };
-
-    inline auto add_plugin(dynamic_environment &app, abstract_plugin* plugin ) -> void {
-        app.add_plugin(plugin);
-    }
 
 }
 
