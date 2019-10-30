@@ -14,12 +14,38 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(ALLOW_EXAMPLES "Enable building examples" OFF)
 
+option(DEV_MODE "developer mode" OFF)
+
+if (DEV_MODE)
+    add_compile_options(
+            -v
+            #-Werror
+
+            -Wall
+            -Wextra
+            -Wpedantic
+
+            -Wcast-align
+            -Wcast-qual
+            #-Wconversion #-> boost problem
+            -Wctor-dtor-privacy
+            -Wenum-compare
+            #-Wfloat-equal
+            #-Wnon-virtual-dtor #->asio problem
+            #-Wold-style-cast #-> boost problem
+            -Woverloaded-virtual
+            -Wredundant-decls
+            #-Wsign-conversion #-> boost problem
+            -Wsign-promo
+    )
+endif ()
+
 #############################################################################################
 #CONAN
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
         message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.13/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
+        file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.14/conan.cmake" "${CMAKE_BINARY_DIR}/conan.cmake")
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
@@ -48,14 +74,14 @@ list(APPEND ${PROJECT_NAME}_header
         header/goblin-engineer/abstract_manager_service.hpp
         header/goblin-engineer/abstract_service.hpp
         header/goblin-engineer/dynamic.hpp
-        header/goblin-engineer/dynamic_environment.hpp
+        header/goblin-engineer/root_manager.hpp
         header/goblin-engineer/forward.hpp
 )
 
 list(APPEND ${PROJECT_NAME}_source
         source/abstract_manager_service.cpp
         source/dynamic.cpp
-        source/dynamic_environment.cpp
+        source/root_manager.cpp
         source/network.cpp
 )
 
