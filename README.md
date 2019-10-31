@@ -3,19 +3,27 @@
 [![Build Status](https://travis-ci.org/jinncrafters/goblin-engineer.svg?branch=master)](https://travis-ci.org/jinncrafters/goblin-engineer)
 # How To Use
 
-## Installing Via Conan
+## For Users
 
-1. Add the corresponding remote to your conan:
+Add the corresponding remote to your conan:
 
 ```bash
-conan remote add jinncrafters https://api.bintray.com/conan/jinncrafters/conan 
+    conan remote add jinncrafters https://api.bintray.com/conan/jinncrafters/conan
 ```
 
-2. Add goblin-engineer to `conanfile.txt` of your project:
+### Basic setup
+```bash
+    $ conan install goblin-engineer/1.0.0a2@jinncrafters/stable
 ```
-[requires]
-goblin-engineer/1.0.0a1@jinncrafters/stable
-```
+### Project setup
+
+If you handle multiple dependencies in your project is better to add a *conanfile.txt*
+
+    [requires]
+    goblin-engineer/1.0.0a2@jinncrafters/stable
+
+    [generators]
+    cmake
 
 # Getting started
 The library has a "service" abstraction which allows you to bind handlers which would call asynchronously on completing HTTP request
